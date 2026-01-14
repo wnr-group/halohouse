@@ -16,10 +16,6 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": [
-      "react",
-      "react-dom"
-    ],
     /* Linting */
     "strict": false,
     "noUnusedLocals": false,
