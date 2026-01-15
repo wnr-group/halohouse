@@ -32,7 +32,9 @@ export function ScrollCamera() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.physicallyCorrectLights = true;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1;
+
 
     /* -------------------- OBJECT (TEMP CAMERA STAND-IN) -------------------- */
     const mesh = new THREE.Mesh(
@@ -46,9 +48,9 @@ renderer.physicallyCorrectLights = true;
     scene.add(mesh);
 
     /* -------------------- LIGHTS -------------------- */
-    scene.add(new THREE.AmbientLight("#ffffff", 0.6));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
 
-    const dirLight = new THREE.DirectionalLight("#ffffff", 1);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 2);
     dirLight.position.set(5, 6, 8);
     scene.add(dirLight);
 

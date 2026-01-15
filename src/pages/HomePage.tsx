@@ -12,7 +12,7 @@ function HeroSection() {
       style={{ backgroundColor: "#F5E6D3" }}
     >
       <div className="w-full max-w-[1400px] mx-auto px-8 md:px-16 lg:px-24 pt-20 pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[60vh]">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[85vh]">
           {/* LEFT COLUMN: Text Content */}
           <div className="text-left z-10 relative">
             <h1
@@ -52,8 +52,9 @@ function HeroSection() {
             </div>
           </div>
 
+          <div className="pt-50">fdsgfvvb</div>
           {/* RIGHT COLUMN: 3D Camera */}
-          <div className="relative h-[400px] lg:h-[600px] w-full flex items-center justify-center">
+          <div className="absolute w-full h-[85vh] lg:h-[90vh] xl:h-[100vh] overflow-visible">
             <HeroCamera3D />
           </div>
         </div>
