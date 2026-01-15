@@ -170,7 +170,7 @@ export function CameraScrollSection() {
 
       {/* Layout Confirmation Text (Fades out when loaded) */}
       <div className={`absolute inset-0 flex items-center justify-center pointer-events-none z-0 transition-opacity duration-1000 ${isLoaded ? 'opacity-20' : 'opacity-100'}`}>
-        <h2 className="text-white text-[15vw] font-black uppercase tracking-tighter opacity-10">THE CAMERA</h2>
+        <h2 className="text-white text-[15vw] font-black uppercase tracking-tighter opacity-10"></h2>
       </div>
     </div>
   );

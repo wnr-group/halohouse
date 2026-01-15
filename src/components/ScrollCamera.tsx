@@ -33,7 +33,7 @@ export function ScrollCamera() {
 
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1;
+    renderer.toneMappingExposure = 1;
 
 
     /* -------------------- OBJECT (TEMP CAMERA STAND-IN) -------------------- */
