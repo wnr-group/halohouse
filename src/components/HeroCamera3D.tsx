@@ -13,7 +13,8 @@ function CameraModel() {
         const center = box.getCenter(new THREE.Vector3());
 
         scene.position.sub(center);
-        scene.position.y += 0.2;
+        scene.position.x -= 0.99;
+        scene.position.y -= 0.35;
 
         const maxDim = Math.max(size.x, size.y, size.z);
         scene.scale.setScalar(1.8 / maxDim); // Reduced scale for better containment
@@ -33,7 +34,7 @@ function CameraAnimation() {
     const { camera } = useThree();
 
     useLayoutEffect(() => {
-        camera.position.set(5, 3, 7); // Pulled further back for better initial framing
+        camera.position.set(5,2.2,7); // Pulled further back for better initial framing
         camera.rotation.set(0.18, 0.7, 0);
         camera.lookAt(0, 0, 0);
 
