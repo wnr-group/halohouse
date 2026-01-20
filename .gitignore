@@ -1,2 +1,5 @@
 node_modules
 build_error.log
+HeroCamera.tsx
+HeroCamera3D.tsx
+Hero.tsx

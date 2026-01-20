@@ -3,35 +3,36 @@ import { CameraScrollSection } from "../components/CameraScrollSection";
 import { BrandSlider } from "../components/BrandSlider";
 import { KeyStats } from "../components/KeyStats";
 
-import { HeroCamera3D } from "../components/HeroCamera3D";
+import { HeroVideo } from "../components/ui/HeroVideo";
 
 function HeroSection() {
   return (
     <section
-      className="min-h-screen flex items-center justify-center overflow-hidden"
-      style={{ backgroundColor: "#F5E6D3" }}
+      className="relative overflow-hidden"
+      style={{ backgroundColor: "#0A1628"  }}
     >
-      <div className="w-full max-w-[1400px] mx-auto px-8 md:px-16 lg:px-24 pt-20 pb-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-[85vh]">
-          {/* LEFT COLUMN: Text Content */}
-          <div className="text-left z-10 relative max-w-xl ml-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 w-full  pb-8 ">
+        
+        {/* LEFT COLUMN: Text Content */}
+        <div className="flex items-center justify-center px-8 md:px-10 lg:px-8 pt-4 pb-20">
+          <div className="max-w-xl">
             <h1
               className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light mb-8 leading-[0.9]"
-              style={{ color: "#0A1628" }}
+              style={{ color: "#FFF" }}
             >
-              Step Into<br/>
-              Your Spotlight
+              <span className="block">Step Into</span>
+              <span className="block whitespace-nowrap">Your Spotlight</span>
             </h1>
 
             <p
-              className="text-xl md:text-2xl lg:text-3xl mb-12 max-w-xl"
-              style={{ color: "#0A1628", opacity: 0.9 }}
+              className="text-xl md:text-2xl lg:text-3xl mb-12"
+              style={{ color: "#FFF", opacity: 0.9 }}
             >
               A home-studio built for creators who want premium-looking podcasts
               without the hassle. Walk in with ideas, walk out with content.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-start">
+            <div className="flex flex-col sm:flex-row gap-6">
               <button
                 className="group px-10 py-5 text-sm tracking-widest uppercase hover:opacity-90 transition-all flex items-center justify-center gap-3 font-medium"
                 style={{ backgroundColor: "#FDB913", color: "#0A1628" }}
@@ -43,6 +44,7 @@ function HeroSection() {
               <button
                 className="px-10 py-5 text-sm tracking-widest uppercase hover:bg-[#0A1628]/10 transition-all flex items-center justify-center gap-3 font-medium"
                 style={{
+                  backgroundColor: "#FDB913",
                   border: "1px solid rgba(10, 22, 40, 0.3)",
                   color: "#0A1628",
                 }}
@@ -52,15 +54,29 @@ function HeroSection() {
               </button>
             </div>
           </div>
-
-         
-          {/* RIGHT COLUMN: 3D Camera */}
-          <div className="relative w-full h-full flex items-center justify-center overflow-hidden">
-            <div className="w-full max-w-[520px]">
-            <HeroCamera3D />
-            </div>
-          </div>
         </div>
+        
+         {/* RIGHT SIDE – VISUALLY BALANCED REEL VIDEO */}
+<div className="flex items-start justify-center px-5 md:px-10 lg:px-8 pt-4 pb-0">
+  <div
+    className="
+      relative
+      mt-10
+      w-[320px]
+      md:w-[360px]
+      lg:w-[400px]
+      aspect-[9/16]
+      rounded-2xl
+      overflow-hidden
+      shadow-2xl
+      bg-black
+    "
+  >
+    <HeroVideo />
+  </div>
+</div>
+
+
       </div>
     </section>
   );

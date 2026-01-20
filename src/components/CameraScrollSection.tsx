@@ -152,7 +152,7 @@ export function CameraScrollSection() {
     <div
       ref={containerRef}
       className="relative w-full overflow-hidden"
-      style={{ height: "100vh", backgroundColor: "#0A1628" }}
+      style={{ height: "100vh", backgroundColor: "#F5E6D3" }}
     >
       <div ref={canvasRef} className="absolute inset-0 z-20" />
 

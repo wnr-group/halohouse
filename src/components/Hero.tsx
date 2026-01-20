@@ -46,7 +46,7 @@ export function Hero() {
           style={{ y, scale }}
           className="text-7xl md:text-8xl lg:text-[10rem] xl:text-[12rem] font-light text-[#F5E6D3] mb-12 tracking-tight leading-[0.9]"
         >
-          Step into your<br />spotlight
+          Step into <br />Your Spotlight
         </motion.h1>
         
         <motion.p 
