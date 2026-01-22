@@ -6,10 +6,14 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 gsap.registerPlugin(ScrollTrigger);
 
+
+
+
 export function CameraScrollSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const VIEW_HEIGHT = window.innerHeight - 88;
 
   useLayoutEffect(() => {
     if (!containerRef.current || !canvasRef.current) return;
@@ -20,19 +24,20 @@ export function CameraScrollSection() {
     // Camera
     const camera = new THREE.PerspectiveCamera(
       35,
-      window.innerWidth / window.innerHeight,
+      window.innerWidth / VIEW_HEIGHT,
       0.1,
       2000 // Increased far plane for huge scale
     );
     camera.position.set(0, 0, 80); // Moved back to fit huge model
-
+    
+    
     // Renderer
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
       antialias: true,
       powerPreference: "high-performance",
     });
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth, VIEW_HEIGHT);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -86,15 +91,69 @@ export function CameraScrollSection() {
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: containerRef.current,
-            start: "top top",
+            start: "top top", // ✅ DO NOT OFFSET HERE
             end: "+=500%",
             scrub: 1.5,
             pin: true,
             anticipatePin: 1,
-            invalidateOnRefresh: true,
-            markers: false // Toggle for debugging
+           
           }
         });
+
+        tl.addLabel("stage1", 0);
+        tl.addLabel("stage2", 1.5);
+        tl.addLabel("stage3", 3.5);
+        tl.addLabel("stage4", 6);
+        
+
+        
+
+        // --- BRAND STORY TIMELINE ---
+        tl.fromTo(                // brand panel
+          "#brand-panel",
+          { opacity: 0, y: 20 , scale:0.96 },
+          { opacity: 1, y: 0, scale:1, duration: 1, ease: "power2.out" },
+          "stage1+=0.6"
+        );
+
+        tl.to(
+          "#brand-panel",
+          {
+            x: -20,
+            duration: 4.5,
+            ease: "none"
+          },
+          "stage1+=1.2"
+        );
+       
+       // BRAND 1
+        tl.fromTo(
+          "#brand-1",
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 1 },
+          "stage1+=0.8"
+        );
+
+        // BRAND 1 OUT → BRAND 2 IN
+        tl.to("#brand-1", { opacity: 0, y: -20, duration: 0.8 }, "stage2");
+        tl.fromTo(
+          "#brand-2",
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 1 },
+          "stage2+=0.2"
+        );
+
+        // BRAND 2 OUT → BRAND 3 IN
+        tl.to("#brand-2", { opacity: 0, y: -20, duration: 0.8 }, "stage3");
+        tl.fromTo(
+          "#brand-3",
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 1 },
+          "stage3+=0.2"
+        );
+
+        // PANEL OUT
+        tl.to("#brand-panel", { opacity: 0, duration: 0.6 }, "stage4");
 
         // STAGE 1: Reveal & Rotate
         tl.to(model.scale, { x: 150, y: 150, z: 150, duration: 2, ease: "power2.inOut" }, "stage1")
@@ -116,12 +175,14 @@ export function CameraScrollSection() {
       undefined,
       (err) => console.error("Error loading model:", err)
     );
+    
 
     // Resize
     const handleResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const viewHeight = window.innerHeight - 88;
+      camera.aspect = window.innerWidth / viewHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(window.innerWidth, viewHeight);
     };
     window.addEventListener("resize", handleResize);
 
@@ -149,29 +210,96 @@ export function CameraScrollSection() {
   }, []);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full overflow-hidden"
-      style={{ height: "100vh", backgroundColor: "#F5E6D3" }}
-    >
-      <div ref={canvasRef} className="absolute inset-0 z-20" />
+    <>
+         {/* Spacer for fixed navbar */}
+      <div style={{ height: "88px" }} />
 
-      {/* Heavy Loading State for visibility */}
-      {!isLoaded && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-30 bg-[#0A1628]">
-          <span className="text-white/40 text-2xl tracking-[0.3em] font-light animate-pulse uppercase mb-4">
-            Loading Camera Experience
-          </span>
-          <div className="w-48 h-[1px] bg-white/10 overflow-hidden">
-            <div className="w-full h-full bg-[#FDB913] animate-[loading_2s_infinite]" style={{ transformOrigin: "left" }} />
+      {/* Pinned camera section */}
+      <div
+        ref={containerRef}
+        className="relative w-full overflow-hidden"
+        style={{
+          height: "100vh",
+          backgroundColor: "#F5E6D3",
+        }}
+      >
+        {/* WebGL Canvas */}
+        <div ref={canvasRef} className="absolute inset-0 z-20" />
+
+        {/* BRAND STORY OVERLAY — SAME AS PREVIOUS VIDEO */}
+        <div className="absolute inset-0 z-10 pointer-events-none hidden md:flex items-end justify-end pr-24 pb-40">
+          <div
+            id="brand-panel"
+            className="relative w-[420px] text-right opacity-0"
+          >
+
+          <div className="relative min-h-[420px]">
+            <div id="brand-1" className="absolute inset-0 flex flex-col items-end text-right">
+              <img
+                src="/src/assets/brand/brand-1.png"
+                alt="Crafted for Creators"
+                className="w-72 h-auto object-contain mb-10"
+              />
+
+              <div className="space-y-3">
+                <h2 className="text-[2.75rem] font-light tracking-tight leading-tight text-[#0A1628]">
+                  Crafted for Creators
+                </h2>
+                <p className="mt-2 text-lg text-[#0A1628]/65 max-w-sm">
+                  A studio-grade camera experience.
+                </p>
+              </div>
+            </div>
+
+            <div id="brand-2" className="absolute inset-0 flex flex-col items-end text-right opacity-0">
+              <img
+                src="/src/assets/brand/brand-2.png"
+                alt="Precision Engineering"
+                className="w-72 h-auto object-contain mb-10"
+              />
+
+              <div className="space-y-3">
+                <h2 className="text-[2.75rem] font-light tracking-tight leading-tight text-[#0A1628]">
+                  Precision Engineering
+                </h2>
+                <p className="mt-2 text-lg text-[#0A1628]/65 max-w-sm">
+                  Designed to capture every detail.
+                </p>
+              </div>
+            </div>
+
+            <div id="brand-3" className="absolute inset-0 flex flex-col items-end text-right opacity-0">
+              <img
+                src="/src/assets/brand/brand-3.png"
+                alt="Built to Inspire"
+                className="w-72 h-auto object-contain mb-10"
+              />
+
+              <div className="space-y-3">
+                <h2 className="text-[2.75rem] font-light tracking-tight leading-tight text-[#0A1628]">
+                  Built to Inspire
+                </h2>
+                <p className="mt-2 text-lg text-[#0A1628]/65 max-w-sm">
+                  Where creativity meets performance.
+                </p>
+              </div>
+            </div>
+
+
+
+
           </div>
         </div>
-      )}
 
-      {/* Layout Confirmation Text (Fades out when loaded) */}
-      <div className={`absolute inset-0 flex items-center justify-center pointer-events-none z-0 transition-opacity duration-1000 ${isLoaded ? 'opacity-20' : 'opacity-100'}`}>
-        <h2 className="text-white text-[15vw] font-black uppercase tracking-tighter opacity-10"></h2>
-      </div>
-    </div>
+{/* Loading overlay */}
+        {!isLoaded && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#0A1628]">
+            Loading Camera Experience
+          </div>
+        )}
+
+     </div>
+     </div>
+    </>
   );
 }

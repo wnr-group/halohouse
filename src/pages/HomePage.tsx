@@ -8,7 +8,7 @@ import { HeroVideo } from "../components/ui/HeroVideo";
 function HeroSection() {
   return (
     <section
-      className="relative overflow-hidden"
+      className="relative overflow-hidden pt-[88px]"
       style={{ backgroundColor: "#0A1628"  }}
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 w-full  pb-8 ">
@@ -85,7 +85,7 @@ function HeroSection() {
 export function HomePage() {
   return (
     <>
-      <div className="overflow-x-hidden">
+      
       {/* SECTION 1: HERO (Cream Background) */}
       <HeroSection />
 
@@ -99,7 +99,7 @@ export function HomePage() {
 
       {/* SECTION 4: KEY STATS (Separate section, no nesting) */}
       <KeyStats />
-      </div>
+      
     </>
   );
 }

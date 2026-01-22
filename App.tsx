@@ -11,6 +11,9 @@ import { BookingPage } from './src/pages/BookingPage';
 import { FeedbackPage } from './src/pages/FeedbackPage';
 import { ContactPage } from './src/pages/ContactPage';
 
+import { ThemeProvider, useTheme } from "./src/theme/ThemeContext";
+import { THEME_A } from "./src/theme/theme";
+
 import { Component, ErrorInfo, ReactNode } from 'react';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
@@ -30,7 +33,8 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-[#0A1628] text-white p-8">
+          <div className="min-h-screen flex items-center justify-center bg-black text-white p-8">
+
           <div className="max-w-2xl">
             <h1 className="text-3xl text-red-500 mb-4">Something went wrong.</h1>
             <pre className="bg-black/50 p-4 rounded text-sm overflow-auto text-red-200">
@@ -51,8 +55,9 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
   }
 }
 
-export default function App() {
+function AppContent() {
   const [currentPage, setCurrentPage] = useState('home');
+  const theme = useTheme();
 
   const renderPage = () => {
     switch (currentPage) {
@@ -78,16 +83,34 @@ export default function App() {
   };
 
   return (
+    <div
+      className="min-h-screen"
+      style={{
+        backgroundColor: theme.bg,
+        color: theme.textPrimary
+      }}
+    >
+      <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
+
+      <main
+        className="min-h-screen pt-16"
+        style={{ backgroundColor: theme.bg }}
+      >
+        {renderPage()}
+      </main>
+
+      <Footer onNavigate={setCurrentPage} />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-[#0A1628] text-[#F5E6D3]">
-        <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
-
-        <main className="min-h-screen bg-[#0A1628] pt-28">
-          {renderPage()}
-        </main>
-
-        <Footer onNavigate={setCurrentPage} />
-      </div>
+      <ThemeProvider value={THEME_A}>
+        <AppContent />
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }
+

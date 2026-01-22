@@ -1,11 +1,15 @@
 import { motion } from 'motion/react';
+import { useTheme } from "../theme/ThemeContext";
+
 
 interface NavigationProps {
   currentPage: string;
   onNavigate: (page: string) => void;
 }
 
-export function Navigation({ currentPage, onNavigate }: NavigationProps) {
+
+export function Navigation({ currentPage, onNavigate }: NavigationProps ) {
+   const theme = useTheme();
   const navItems = [
     { id: 'home', label: 'Home' },
     { id: 'portfolio', label: 'Portfolio' },
@@ -17,17 +21,26 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
   ];
 
   return (
-    <motion.nav 
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="fixed top-0 left-0 right-0 z-50 bg-[#0A1628]/95 backdrop-blur-sm border-b border-[#FDB913]/20"
+    <nav className="fixed top-0 left-0 w-full z-50 "
+      style={{
+        backgroundColor: theme.surface,
+        borderBottom: `1px solid ${theme.border}`,
+        color: theme.textPrimary
+      }}
     >
+
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24 py-6 flex items-center justify-between">
         {/* Logo */}
         <button
           onClick={() => onNavigate('home')}
-          className="text-xl tracking-widest text-[#F5E6D3] uppercase font-light hover:text-[#FDB913] transition-colors"
+          className="text-xl tracking-widest uppercase font-light transition-colors"
+style={{
+  color: theme.textPrimary
+}}
+onMouseEnter={(e) => e.currentTarget.style.color = theme.accent}
+onMouseLeave={(e) => e.currentTarget.style.color = theme.textPrimary}
+
+ 
         >
           Halohouse
         </button>
@@ -38,17 +51,20 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
             <button
               key={item.id}
               onClick={() => onNavigate(item.id)}
-              className={`text-sm tracking-wider uppercase transition-colors relative ${
-                currentPage === item.id
-                  ? 'text-[#FDB913]'
-                  : 'text-[#F5E6D3] hover:text-[#FDB913]'
-              }`}
+              className="text-sm tracking-wider uppercase transition-colors relative "
+              style={{
+                color:
+                  currentPage === item.id
+                    ? theme.accent
+                    : theme.textSecondary
+              }}
             >
               {item.label}
               {currentPage === item.id && (
                 <motion.div
                   layoutId="activeNav"
-                  className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#FDB913]"
+                  className="absolute -bottom-1 left-0 right-0 h-[2px] "
+                  style={{ backgroundColor: theme.accent }}
                 />
               )}
             </button>
@@ -58,11 +74,16 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
         {/* CTA Button */}
         <button
           onClick={() => onNavigate('booking')}
-          className="hidden md:block px-6 py-2.5 bg-[#FDB913] text-[#0A1628] text-sm tracking-widest uppercase hover:bg-[#FDB913]/90 transition-all font-medium"
+          className="hidden md:block px-6 py-2.5  text-sm tracking-widest uppercase transition-all font-medium"
+           style={{
+    backgroundColor: theme.accent,
+    color: theme.bg
+  }}
         >
           Book Now
         </button>
       </div>
-    </motion.nav>
+      </nav>
+   
   );
 }
