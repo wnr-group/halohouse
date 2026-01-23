@@ -2,6 +2,7 @@ import { ArrowRight, Play } from "lucide-react";
 import { CameraScrollSection } from "../components/CameraScrollSection";
 import { BrandSlider } from "../components/BrandSlider";
 import { KeyStats } from "../components/KeyStats";
+import { StudioSection } from "../components/StudioSection";
 
 import { HeroVideo } from "../components/ui/HeroVideo";
 
@@ -9,7 +10,7 @@ function HeroSection() {
   return (
     <section
       className="relative overflow-hidden pt-[88px]"
-      style={{ backgroundColor: "#0A1628"  }}
+      
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 w-full  pb-8 ">
         
@@ -17,17 +18,13 @@ function HeroSection() {
         <div className="flex items-center justify-center px-8 md:px-10 lg:px-8 pt-4 pb-20">
           <div className="max-w-xl">
             <h1
-              className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light mb-8 leading-[0.9]"
-              style={{ color: "#FFF" }}
+               className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light mb-8 leading-[0.9] text-[#0A1628]"
             >
               <span className="block">Step Into</span>
               <span className="block whitespace-nowrap">Your Spotlight</span>
             </h1>
 
-            <p
-              className="text-xl md:text-2xl lg:text-3xl mb-12"
-              style={{ color: "#FFF", opacity: 0.9 }}
-            >
+             <p className="text-xl md:text-2xl lg:text-3xl mb-12 text-[#0A1628]/80">
               A home-studio built for creators who want premium-looking podcasts
               without the hassle. Walk in with ideas, walk out with content.
             </p>
@@ -85,20 +82,26 @@ function HeroSection() {
 export function HomePage() {
   return (
     <>
-      
+      <div className="bg-[#F5E6D3] min-h-screen">
       {/* SECTION 1: HERO (Cream Background) */}
       <HeroSection />
 
       {/* SECTION 2: CAMERA SCROLL EFFECT (Pinned, Navy Background) */}
+  
       <CameraScrollSection />
-
+     
+      
       {/* SECTION 3: BRAND SLIDER (Separate section, no nesting) */}
-      <section style={{ backgroundColor: "#081E36", marginTop: 0 }}>
+      <section  className="text-[#0A1628]" style={{ marginTop: 0 }}>
         <BrandSlider />
       </section>
 
+      {/* SECTION 4: STUDIO SECTION (Separate section, no nesting) */}
+      <StudioSection /> 
+
       {/* SECTION 4: KEY STATS (Separate section, no nesting) */}
       <KeyStats />
+      </div>
       
     </>
   );

@@ -10,7 +10,7 @@ export function KeyStats() {
       value: '20+',
       label: 'Clients'
     },
-    {
+    {   
       icon: Video,
       value: '500+',
       label: 'Videos'
@@ -26,7 +26,7 @@ export function KeyStats() {
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   return (
-    <section ref={sectionRef} className="py-20 px-8 md:px-16 lg:px-24 bg-[#0A1628] border-y border-[#FDB913]/20">
+    <section ref={sectionRef} className="py-20 px-8 md:px-16 lg:px-24 bg-transparent border-y border-[#0A1628]/10">
       <div className="max-w-[1600px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
           {stats.map((stat, index) => {
@@ -43,11 +43,11 @@ export function KeyStats() {
                 }}
                 className="text-center"
               >
-                <Icon className="w-12 h-12 text-[#FDB913] mx-auto mb-4" strokeWidth={1} />
-                <div className="text-5xl md:text-6xl font-light text-[#F5E6D3] mb-2">
+                <Icon className="w-12 h-12 text-[#0A1628] mx-auto mb-4" strokeWidth={1} />
+                <div className="text-5xl md:text-6xl font-light text-[#0A1628] mb-2">
                   {stat.value}
                 </div>
-                <div className="text-sm tracking-widest uppercase text-[#F5E6D3]/60">
+                <div className="text-sm tracking-widest uppercase text-[#0A1628]/60">
                   {stat.label}
                 </div>
               </motion.div>

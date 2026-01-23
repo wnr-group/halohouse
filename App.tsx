@@ -5,14 +5,12 @@ import { Footer } from './src/components/Footer';
 import { HomePage } from './src/pages/HomePage';
 import { PortfolioPage } from './src/pages/PortfolioPage';
 import { ServicesPage } from './src/pages/ServicesPage';
-import { StudioPage } from './src/pages/StudioPage';
 import { AboutPage } from './src/pages/AboutPage';
 import { BookingPage } from './src/pages/BookingPage';
 import { FeedbackPage } from './src/pages/FeedbackPage';
 import { ContactPage } from './src/pages/ContactPage';
 
-import { ThemeProvider, useTheme } from "./src/theme/ThemeContext";
-import { THEME_A } from "./src/theme/theme";
+
 
 import { Component, ErrorInfo, ReactNode } from 'react';
 
@@ -57,7 +55,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 
 function AppContent() {
   const [currentPage, setCurrentPage] = useState('home');
-  const theme = useTheme();
+ 
 
   const renderPage = () => {
     switch (currentPage) {
@@ -67,8 +65,6 @@ function AppContent() {
         return <PortfolioPage />;
       case 'services':
         return <ServicesPage />;
-      case 'studio':
-        return <StudioPage />;
       case 'about':
         return <AboutPage />;
       case 'booking':
@@ -83,19 +79,12 @@ function AppContent() {
   };
 
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        backgroundColor: theme.bg,
-        color: theme.textPrimary
-      }}
-    >
+     <div className="min-h-screen bg-background text-foreground">
+
       <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
 
-      <main
-        className="min-h-screen pt-16"
-        style={{ backgroundColor: theme.bg }}
-      >
+       <main className="min-h-screen pt-16">
+
         {renderPage()}
       </main>
 
@@ -104,13 +93,11 @@ function AppContent() {
   );
 }
 
+
 export default function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider value={THEME_A}>
-        <AppContent />
-      </ThemeProvider>
+      <AppContent />
     </ErrorBoundary>
   );
 }
-

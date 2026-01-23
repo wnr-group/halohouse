@@ -16,7 +16,8 @@ export function PortfolioPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0A1628] pt-32 pb-20">
+    <div className="min-h-screen pt-32 pb-20">
+
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24">
         {/* Page Header */}
         <motion.div
@@ -25,10 +26,10 @@ export function PortfolioPage() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="mb-20"
         >
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-light text-[#F5E6D3] mb-6 tracking-tight">
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-light text-foreground">
             Portfolio
           </h1>
-          <p className="text-xl md:text-2xl text-[#F5E6D3]/70 font-light leading-relaxed max-w-3xl">
+          <p className="text-xl md:text-2xl text-foreground/70">
             Explore our collection of professional content created in our studio
           </p>
         </motion.div>
@@ -43,28 +44,33 @@ export function PortfolioPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
               whileHover={{ scale: 1.05 }}
-              className="group relative aspect-[9/16] bg-[#1A2638] rounded-lg overflow-hidden cursor-pointer"
+              className="group relative aspect-[9/16] bg-white rounded-lg border border-border"
+
             >
               {/* Video Thumbnail Placeholder */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#FDB913]/20 to-[#0A1628]/80"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background/90"></div>
+
 
               {/* Category Badge */}
-              <div className="absolute top-4 left-4 px-3 py-1 bg-[#FDB913]/20 backdrop-blur-sm border border-[#FDB913]/30 rounded-full">
-                <p className="text-[10px] tracking-widest uppercase text-[#FDB913]">
+              <div className="absolute top-4 left-4 px-3 py-1 bg-primary/15 border border-primary/30 rounded-full">
+                <p className="text-[10px] tracking-widest uppercase text-primary">
                   {item.category}
                 </p>
               </div>
 
               {/* Play Icon Overlay */}
               <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
-                <div className="w-16 h-16 rounded-full bg-[#FDB913] flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <Play className="w-8 h-8 text-[#0A1628] fill-current ml-1" />
+                <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+                  <Play className="w-8 h-8 text-primary-foreground ml-1" />
+
                 </div>
               </div>
 
               {/* Title */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0A1628] to-transparent">
-                <p className="text-xs tracking-wider uppercase text-[#F5E6D3]/90 font-light">
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background/80 to-transparent">
+
+                <p className="text-xs tracking-wider uppercase text-foreground/90">
+
                   {item.title}
                 </p>
               </div>
