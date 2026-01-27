@@ -9,7 +9,7 @@ import { HeroVideo } from "../components/ui/HeroVideo";
 function HeroSection() {
   return (
     <section
-      className="relative overflow-hidden pt-[88px]"
+      className="relative overflow-hidden"
       
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 w-full  pb-8 ">

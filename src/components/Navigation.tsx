@@ -45,9 +45,9 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
     <nav 
       className="fixed top-0 left-0 w-full z-50"
       style={{
-        backgroundColor: theme.surface,
-        borderBottom: `1px solid ${theme.border}`, // Fixed template literal
-        color: theme.textPrimary
+         backgroundColor: "#223A5E", // lighter blueish shade
+         borderBottom: "1px solid rgba(255,255,255,0.08)",
+    color: "#F5E6D3"
       }}
     >
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24 py-6 flex items-center justify-between">
