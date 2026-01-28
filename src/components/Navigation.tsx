@@ -37,6 +37,7 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
     { id: 'portfolio', label: 'Portfolio' },
     { id: 'services', label: 'Services' },
     { id: 'about', label: 'About' },
+    { id: 'careers', label: 'Careers' },
     { id: 'booking', label: 'Book Session' },
     { id: 'contact', label: 'Contact' }
   ];

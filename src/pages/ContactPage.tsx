@@ -99,40 +99,7 @@ export function ContactPage() {
         </div>
       </section>
 
-      {/* CAREERS SECTION */}
-      <section className="py-32 px-8 md:px-16 lg:px-24">
-        <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="mb-8">Careers</h2>
-
-            <p className="text-foreground/80 mb-6">
-              Join our creative team and help shape the future of content creation.
-            </p>
-
-            <p className="text-foreground/60 mb-10">
-              We’re always looking for talented people passionate about storytelling, production, and creativity.
-            </p>
-
-            <button className="px-10 py-5 bg-[#FDB913] text-[#0A1628] text-sm tracking-widest uppercase hover:bg-[#FDB913]/90 transition-all font-medium inline-flex items-center gap-3">
-              Apply Now
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </motion.div>
-
-          <div className="h-[500px] rounded-lg bg-muted flex items-center justify-center">
-            <span className="text-muted-foreground uppercase tracking-widest text-sm">
-              Image Placeholder
-            </span>
-          </div>
-
-        </div>
-      </section>
+     
     </div>
   );
 }
