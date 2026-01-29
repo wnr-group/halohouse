@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Navigation } from "./src/components/Navigation";
 import { Footer } from "./src/components/Footer";
-import CreateJob from "./src/pages/careers/CreateJob";
+import CreateJob from "./src/admin/CreateJob";
 
 import { HomePage } from "./src/pages/HomePage";
 import { PortfolioPage } from "./src/pages/PortfolioPage";
@@ -11,8 +11,14 @@ import { BookingPage } from "./src/pages/BookingPage";
 import { FeedbackPage } from "./src/pages/FeedbackPage";
 import { ContactPage } from "./src/pages/ContactPage";
 import { CareersPage } from "./src/pages/CareersPage";
+import { Routes, Route, useLocation } from "react-router-dom";
 
 import { Component, ErrorInfo, ReactNode } from "react";
+
+
+import AdminDashboard from "./src/admin/AdminDashboard";
+import AdminBookings from "./src/admin/AdminBookings";
+import AdminApplications from "./src/admin/AdminApplications";
 
 /* ---------------- ERROR BOUNDARY ---------------- */
 
@@ -60,57 +66,49 @@ class ErrorBoundary extends Component<
 }
 
 /* ---------------- APP CONTENT ---------------- */
-
 function AppContent() {
   const [currentPage, setCurrentPage] = useState("home");
+  const location = useLocation();
 
-  //  detect hidden admin page
-  const isAdminCreateJobPage =
-    window.location.pathname === "/careers/create-job";
-
-  const renderPage = () => {
-    if (isAdminCreateJobPage) {
-      return <CreateJob />;
-    }
-
-    switch (currentPage) {
-      case "home":
-        return <HomePage />;
-      case "portfolio":
-        return <PortfolioPage />;
-      case "services":
-        return <ServicesPage />;
-      case "about":
-        return <AboutPage />;
-      case "booking":
-        return <BookingPage />;
-      case "feedback":
-        return <FeedbackPage />;
-      case "careers":
-        return <CareersPage />
-      case "contact":
-        return <ContactPage />;
-      default:
-        return <HomePage />;
-    }
-  };
+  const isAdminPage = location.pathname.startsWith("/admin");
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/*  hide nav on admin page */}
-      {!isAdminCreateJobPage && (
+      {/* Hide nav on admin pages */}
+      {!isAdminPage && (
         <Navigation
           currentPage={currentPage}
           onNavigate={setCurrentPage}
         />
       )}
 
-      <main className="min-h-screen pt-16">{renderPage()}</main>
+      <main className="min-h-screen pt-16">
+        {/* ADMIN ROUTES */}
+        <Routes>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/create-job" element={<CreateJob />} />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
+          <Route path="/admin/applications" element={<AdminApplications />} />
+        </Routes>
 
-      {/*  hide footer on admin page */}
-      {!isAdminCreateJobPage && (
-        <Footer onNavigate={setCurrentPage} />
-      )}
+
+        {/* PUBLIC PAGES (state-based, unchanged) */}
+        {!isAdminPage && (
+          <>
+            {currentPage === "home" && <HomePage />}
+            {currentPage === "portfolio" && <PortfolioPage />}
+            {currentPage === "services" && <ServicesPage />}
+            {currentPage === "about" && <AboutPage />}
+            {currentPage === "booking" && <BookingPage />}
+            {currentPage === "feedback" && <FeedbackPage />}
+            {currentPage === "careers" && <CareersPage />}
+            {currentPage === "contact" && <ContactPage />}
+          </>
+        )}
+      </main>
+
+      {/* Hide footer on admin pages */}
+      {!isAdminPage && <Footer onNavigate={setCurrentPage} />}
     </div>
   );
 }

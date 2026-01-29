@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ReactQuill from "react-quill";
-import { supabase } from "../../lib/supabase";
+import { supabase } from "../lib/supabase";
 
 
 const CreateJob = () => {
