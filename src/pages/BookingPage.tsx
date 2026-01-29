@@ -14,8 +14,6 @@ export function BookingPage() {
   email: "",
   phone: "",
   service: "",
-  preferred_date: "",
-  preferred_time: "",
   message: "",
 });
 
@@ -44,8 +42,6 @@ const handleSubmit = async (e: React.FormEvent) => {
     email: "",
     phone: "",
     service: "",
-    preferred_date: "",
-    preferred_time: "",
     message: "",
   });
 };
@@ -113,12 +109,7 @@ const handleChange = (
                 <Field label="Phone *" name="phone" placeholder="+91 00000 00000" onChange={handleChange} />
                 <SelectField label="Service *" name="service" onChange={handleChange} />
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Field label="Preferred Date *" name="preferred_date" type="date" onChange={handleChange} />
-                <Field label="Preferred Time *" name="preferred_time" type="time" onChange={handleChange} />
-              </div>
-
+              
               <div>
                 <label className="block text-sm tracking-widest uppercase text-[#0A1628]/60 mb-3">
                   Message (Optional)

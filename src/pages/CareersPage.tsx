@@ -8,7 +8,7 @@ import { useRef } from "react";
 
 export function CareersPage() {
   const [jobs, setJobs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+
   const [selectedJob, setSelectedJob] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -38,7 +38,7 @@ export function CareersPage() {
   const handleApplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !linkedin || !resume) {
+    if (!email || !resume) {
       alert("All fields are required");
       return;
     }
@@ -104,7 +104,7 @@ export function CareersPage() {
         setJobs(data || []);
       }
 
-      setLoading(false);
+    
     };
 
     fetchJobs();
@@ -233,7 +233,7 @@ export function CareersPage() {
 
                   <input
                     type="url"
-                    placeholder="LinkedIn profile URL *"
+                    placeholder="LinkedIn profile URL (optional)"
                     value={linkedin}
                     onChange={(e) => setLinkedin(e.target.value)}
                     className="w-full border px-4 py-3"
@@ -258,8 +258,8 @@ export function CareersPage() {
 
                   <button
                     type="submit"
-                    disabled={!email || !linkedin || !resume}
-                    className={`w-full py-3 font-medium ${email && linkedin && resume
+                    disabled={!email || !resume}
+                    className={`w-full py-3 font-medium ${email && resume
                         ? "bg-[#FDB913] text-[#0A1628]"
                         : "bg-gray-300 text-gray-600 cursor-not-allowed"
                       }`}
