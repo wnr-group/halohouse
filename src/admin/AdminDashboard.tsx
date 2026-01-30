@@ -10,6 +10,10 @@ const AdminDashboard = () => {
           ➜ Create Job
         </Link>
 
+        <Link to="/admin/jobs" className="block underline">
+          ➜ Manage Jobs
+        </Link>
+
         <Link to="/admin/bookings" className="block underline">
           ➜ View Booking Sessions
         </Link>

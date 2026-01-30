@@ -16,10 +16,13 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { Component, ErrorInfo, ReactNode } from "react";
 
 
+import AdminAuthGuard from "./src/admin/AdminAuthGuard";
+import AdminLayout from "./src/admin/AdminLayout";
 import AdminDashboard from "./src/admin/AdminDashboard";
 import AdminBookings from "./src/admin/AdminBookings";
 import AdminApplications from "./src/admin/AdminApplications";
-
+import AdminJobsList from "./src/admin/AdminJobsList";
+import EditJob from "./src/admin/EditJob";
 /* ---------------- ERROR BOUNDARY ---------------- */
 
 class ErrorBoundary extends Component<
@@ -84,12 +87,25 @@ function AppContent() {
 
       <main className="min-h-screen pt-16">
         {/* ADMIN ROUTES */}
-        <Routes>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/create-job" element={<CreateJob />} />
-          <Route path="/admin/bookings" element={<AdminBookings />} />
-          <Route path="/admin/applications" element={<AdminApplications />} />
-        </Routes>
+       <Routes>
+  {/* ADMIN ROUTES — PROTECTED */}
+  <Route
+    path="/admin"
+    element={
+      <AdminAuthGuard>
+        <AdminLayout />
+      </AdminAuthGuard>
+    }
+  >
+    <Route index element={<AdminDashboard />} />
+    <Route path="create-job" element={<CreateJob />} />
+    <Route path="jobs" element={<AdminJobsList />} />
+    <Route path="jobs/:id/edit" element={<EditJob />} />
+    <Route path="bookings" element={<AdminBookings />} />
+    <Route path="applications" element={<AdminApplications />} />
+    
+  </Route>
+</Routes>
 
 
         {/* PUBLIC PAGES (state-based, unchanged) */}
