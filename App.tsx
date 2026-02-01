@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Navigation } from "./src/components/Navigation";
 import { Footer } from "./src/components/Footer";
 import CreateJob from "./src/admin/CreateJob";
@@ -70,7 +69,6 @@ class ErrorBoundary extends Component<
 
 /* ---------------- APP CONTENT ---------------- */
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState("home");
   const location = useLocation();
 
   const isAdminPage = location.pathname.startsWith("/admin");
@@ -79,14 +77,11 @@ function AppContent() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Hide nav on admin pages */}
       {!isAdminPage && (
-        <Navigation
-          currentPage={currentPage}
-          onNavigate={setCurrentPage}
-        />
+        <Navigation />
       )}
 
       <main className="min-h-screen pt-16">
-        {/* ADMIN ROUTES */}
+        {/* ALL ROUTES */}
        <Routes>
   {/* ADMIN ROUTES — PROTECTED */}
   <Route
@@ -105,26 +100,21 @@ function AppContent() {
     <Route path="applications" element={<AdminApplications />} />
     
   </Route>
+
+  {/* PUBLIC ROUTES */}
+  <Route path="/" element={<HomePage />} />
+  <Route path="/portfolio" element={<PortfolioPage />} />
+  <Route path="/services" element={<ServicesPage />} />
+  <Route path="/about" element={<AboutPage />} />
+  <Route path="/careers" element={<CareersPage />} />
+  <Route path="/book-session" element={<BookingPage />} />
+  <Route path="/contact" element={<ContactPage />} />
+  <Route path="/feedback" element={<FeedbackPage />} />
 </Routes>
-
-
-        {/* PUBLIC PAGES (state-based, unchanged) */}
-        {!isAdminPage && (
-          <>
-            {currentPage === "home" && <HomePage />}
-            {currentPage === "portfolio" && <PortfolioPage />}
-            {currentPage === "services" && <ServicesPage />}
-            {currentPage === "about" && <AboutPage />}
-            {currentPage === "booking" && <BookingPage />}
-            {currentPage === "feedback" && <FeedbackPage />}
-            {currentPage === "careers" && <CareersPage />}
-            {currentPage === "contact" && <ContactPage />}
-          </>
-        )}
       </main>
 
       {/* Hide footer on admin pages */}
-      {!isAdminPage && <Footer onNavigate={setCurrentPage} />}
+      {!isAdminPage && <Footer />}
     </div>
   );
 }

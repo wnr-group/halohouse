@@ -36,7 +36,7 @@ const camera = new THREE.PerspectiveCamera(
   2000
 );
    
-    camera.position.set(0, 0, 80);
+    camera.position.set(0, 5, 80); // Offset camera slightly up to center the model view
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -83,10 +83,11 @@ canvasRef.current.appendChild(renderer.domElement);
         const center = box.getCenter(new THREE.Vector3());
         model.position.sub(center);
 
-        model.scale.set(200, 200, 200);
-        model.position.set(0, -10, 0);
+        model.scale.set(250, 250, 250);
+        model.position.set(0, 0, 0);
 
         modelGroup.rotation.set(0.1, -0.3, 0);
+        modelGroup.position.set(-20, -5, 0); // Start positioned on the left and slightly lower
         modelGroup.add(model);
         setIsLoaded(true);
 
@@ -102,18 +103,6 @@ canvasRef.current.appendChild(renderer.domElement);
             pin: true,
             pinSpacing: true,
             anticipatePin: 1,
-            onRefresh: () => {
-              const contactX = (window as any).__CONTACT_X__;
-              if (!contactX || !innerRef.current) return;
-
-              const rect = innerRef.current.getBoundingClientRect();
-              const localX = contactX - rect.left;
-
-              gsap.set("#brand-panel", {
-                left: localX,
-                xPercent: -50,
-              });
-            },
           }
         });
 
@@ -136,15 +125,16 @@ canvasRef.current.appendChild(renderer.domElement);
         tl.fromTo("#brand-3", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 1 }, "stage3+=0.2");
         tl.to("#brand-panel", { opacity: 0, duration: 0.6 }, "stage4");
 
-        // 3D CAMERA ANIMATION
-        tl.to(model.scale, { x: 150, y: 150, z: 150, duration: 2, ease: "power2.inOut" }, "stage1")
+        // 3D CAMERA ANIMATION - Keep camera centered and on the left side
+        tl.to(model.scale, { x: 220, y: 220, z: 220, duration: 2, ease: "power2.inOut" }, "stage1")
           .to(modelGroup.rotation, { y: Math.PI * 0.5, duration: 2, ease: "power2.inOut" }, "stage1")
-          .to(modelGroup.position, { x: -25, duration: 2, ease: "power2.inOut" }, "stage1");
+          .to(modelGroup.position, { x: -20, y: -5, z: 0, duration: 2, ease: "power2.inOut" }, "stage1");
 
-        tl.to(modelGroup.rotation, { x: 0.6, y: Math.PI * 1.2, duration: 3, ease: "power1.inOut" }, "stage2");
+        tl.to(modelGroup.rotation, { x: 0.3, y: Math.PI * 1.2, duration: 3, ease: "power1.inOut" }, "stage2")
+          .to(modelGroup.position, { x: -18, y: -5, z: 0, duration: 3, ease: "power1.inOut" }, "stage2");
 
-        tl.to(model.scale, { x: 300, y: 300, z: 300, duration: 2.5, ease: "power3.inOut" }, "stage3")
-          .to(modelGroup.position, { x: 0, y: 0, z: 40, duration: 2.5, ease: "power3.inOut" }, "stage3")
+        tl.to(model.scale, { x: 350, y: 350, z: 350, duration: 2.5, ease: "power3.inOut" }, "stage3")
+          .to(modelGroup.position, { x: 0, y: -5, z: 30, duration: 2.5, ease: "power3.inOut" }, "stage3")
           .to(modelGroup.rotation, { x: 0, y: 0, z: 0, duration: 2.5, ease: "power3.inOut" }, "stage3");
 
         tl.to(modelGroup.position, { z: -100, duration: 1, ease: "power3.in" }, "stage4")
@@ -201,32 +191,32 @@ canvasRef.current.appendChild(renderer.domElement);
           style={{ width: "100%", height: "100%" }}
         />
 
-        <div className="absolute inset-0 z-10 pointer-events-none hidden md:flex">
-          <div ref={innerRef} className="relative max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24 w-full">
-            <div id="brand-panel" className="absolute top-[120px] w-[420px] text-right opacity-0">
-              <div className="relative min-h-[420px]">
+        <div className="absolute inset-0 z-10 pointer-events-none hidden md:flex items-center">
+          <div ref={innerRef} className="relative max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24 w-full h-full flex items-center">
+            <div id="brand-panel" className="absolute right-8 md:right-16 lg:right-24 top-1/2 -translate-y-1/2 w-[500px] text-right opacity-0">
+              <div className="relative min-h-[500px] flex flex-col justify-center">
                 {/* Brand 1 */}
-                <div id="brand-1" className="absolute inset-0 flex flex-col items-end text-right">
-                  <img src="/src/assets/brand/brand-1.png" alt="" className="w-72 h-auto mb-10" />
-                  <div className="space-y-3">
-                    <h2 className="text-[2.75rem] font-light tracking-tight leading-tight text-[#0A1628]">Crafted for Creators</h2>
-                    <p className="mt-2 text-lg text-[#0A1628]/65 max-w-sm">A studio-grade camera experience.</p>
+                <div id="brand-1" className="absolute inset-0 flex flex-col items-end justify-center text-right">
+                  <img src="/src/assets/brand/brand-1.png" alt="" className="w-96 h-auto mb-8 rounded-2xl shadow-xl" />
+                  <div className="space-y-4">
+                    <h2 className="text-[3.25rem] font-light tracking-tight leading-tight text-[#0A1628]">Crafted for Creators</h2>
+                    <p className="mt-2 text-xl text-[#0A1628]/65 max-w-md ml-auto">A studio-grade camera experience.</p>
                   </div>
                 </div>
                 {/* Brand 2 */}
-                <div id="brand-2" className="absolute inset-0 flex flex-col items-end text-right opacity-0">
-                  <img src="/src/assets/brand/brand-2.png" alt="" className="w-72 h-auto mb-10" />
-                  <div className="space-y-3">
-                    <h2 className="text-[2.75rem] font-light tracking-tight leading-tight text-[#0A1628]">Precision Engineering</h2>
-                    <p className="mt-2 text-lg text-[#0A1628]/65 max-w-sm">Designed to capture every detail.</p>
+                <div id="brand-2" className="absolute inset-0 flex flex-col items-end justify-center text-right opacity-0">
+                  <img src="/src/assets/brand/brand-2.png" alt="" className="w-96 h-auto mb-8 rounded-2xl shadow-xl" />
+                  <div className="space-y-4">
+                    <h2 className="text-[3.25rem] font-light tracking-tight leading-tight text-[#0A1628]">Precision Engineering</h2>
+                    <p className="mt-2 text-xl text-[#0A1628]/65 max-w-md ml-auto">Designed to capture every detail.</p>
                   </div>
                 </div>
                 {/* Brand 3 */}
-                <div id="brand-3" className="absolute inset-0 flex flex-col items-end text-right opacity-0">
-                  <img src="/src/assets/brand/brand-3.png" alt="" className="w-72 h-auto mb-10" />
-                  <div className="space-y-3">
-                    <h2 className="text-[2.75rem] font-light tracking-tight leading-tight text-[#0A1628]">Built to Inspire</h2>
-                    <p className="mt-2 text-lg text-[#0A1628]/65 max-w-sm">Where creativity meets performance.</p>
+                <div id="brand-3" className="absolute inset-0 flex flex-col items-end justify-center text-right opacity-0">
+                  <img src="/src/assets/brand/brand-3.png" alt="" className="w-96 h-auto mb-8 rounded-2xl shadow-xl" />
+                  <div className="space-y-4">
+                    <h2 className="text-[3.25rem] font-light tracking-tight leading-tight text-[#0A1628]">Built to Inspire</h2>
+                    <p className="mt-2 text-xl text-[#0A1628]/65 max-w-md ml-auto">Where creativity meets performance.</p>
                   </div>
                 </div>
               </div>

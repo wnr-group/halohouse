@@ -55,7 +55,7 @@ const handleChange = (
 
 
   return (
-    <div className="min-h-screen pt-32 pb-20 bg-background text-foreground">
+    <div className="min-h-screen pb-20 bg-background text-foreground">
       {/* Pricing */}
       <Pricing />
 

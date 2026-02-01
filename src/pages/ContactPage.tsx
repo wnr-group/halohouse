@@ -3,10 +3,10 @@ import { Phone, MessageCircle, Mail, MapPin, ArrowRight } from "lucide-react";
 
 export function ContactPage() {
   return (
-    <div className="min-h-screen pt-32 pb-20 bg-background text-foreground">
+    <div className="min-h-screen pb-20 bg-background text-foreground">
 
       {/* CONTACT SECTION */}
-      <section className="py-20 px-8 md:px-16 lg:px-24">
+      <section className="py-32 px-8 md:px-16 lg:px-24">
         <div className="max-w-[1400px] mx-auto">
 
           {/* Header */}

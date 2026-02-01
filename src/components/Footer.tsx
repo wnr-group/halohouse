@@ -1,10 +1,7 @@
 import { Phone, MessageCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-interface FooterProps {
-  onNavigate: (page: string) => void;
-}
-
-export function Footer({ onNavigate }: FooterProps) {
+export function Footer() {
   const features = [
     'Professional Equipment',
     'Expert Support',
@@ -20,12 +17,12 @@ export function Footer({ onNavigate }: FooterProps) {
 
           {/* Tagline */}
           <div className="text-center mb-16">
-            <button
-              onClick={() => onNavigate('home')}
-              className="text-2xl tracking-widest uppercase font-light mb-8 text-[#FDB913] hover:text-[#F5E6D3]/90 transition-colors"
+            <Link
+              to="/"
+              className="text-2xl tracking-widest uppercase font-light mb-8 text-[#FDB913] hover:text-[#F5E6D3]/90 transition-colors inline-block"
             >
               Halohouse
-            </button>
+            </Link>
             <p className="text-xl md:text-2xl text-[#F5E6D3]/90 font-light leading-relaxed max-w-4xl mx-auto">
               Premium podcast visuals. Zero setup. Cool looks. Endless episodes.
             </p>
@@ -62,18 +59,18 @@ export function Footer({ onNavigate }: FooterProps) {
               </h4>
               <div className="space-y-2">
                 {[
-                  { id: 'about', label: 'About' },
-                  { id: 'portfolio', label: 'Portfolio' },
-                  { id: 'services', label: 'Services' },
-                  { id: 'contact', label: 'Contact' }
+                  { id: '/about', label: 'About' },
+                  { id: '/portfolio', label: 'Portfolio' },
+                  { id: '/services', label: 'Services' },
+                  { id: '/contact', label: 'Contact' }
                 ].map((link, index) => (
                   <div key={index}>
-                    <button
-                      onClick={() => onNavigate(link.id)}
+                    <Link
+                      to={link.id}
                       className="text-[#F5E6D3]/80 hover:text-[#FDB913] transition-colors font-light"
                     >
                       {link.label}
-                    </button>
+                    </Link>
                   </div>
                 ))}
               </div>

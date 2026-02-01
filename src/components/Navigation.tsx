@@ -2,15 +2,12 @@ import { motion } from 'framer-motion'; // Note: Ensure you are using 'framer-mo
 import { useTheme } from "../theme/ThemeContext";
 import { useRef, useEffect } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Link, useLocation } from "react-router-dom";
 
-interface NavigationProps {
-  currentPage: string;
-  onNavigate: (page: string) => void;
-}
-
-export function Navigation({ currentPage, onNavigate }: NavigationProps) {
+export function Navigation() {
   const theme = useTheme();
-  const contactRef = useRef<HTMLButtonElement | null>(null);
+  const contactRef = useRef<HTMLAnchorElement | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     if (!contactRef.current) return;
@@ -33,14 +30,16 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
   }, []);
 
   const navItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'portfolio', label: 'Portfolio' },
-    { id: 'services', label: 'Services' },
-    { id: 'about', label: 'About' },
-    { id: 'careers', label: 'Careers' },
-    { id: 'booking', label: 'Book Session' },
-    { id: 'contact', label: 'Contact' }
+    { id: '/', label: 'Home' },
+    { id: '/portfolio', label: 'Portfolio' },
+    { id: '/services', label: 'Services' },
+    { id: '/about', label: 'About' },
+    { id: '/careers', label: 'Careers' },
+    { id: '/book-session', label: 'Book Session' },
+    { id: '/contact', label: 'Contact' }
   ];
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav 
@@ -53,30 +52,30 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
     >
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24 py-6 flex items-center justify-between">
         {/* Logo */}
-        <button
-          onClick={() => onNavigate('home')}
+        <Link
+          to="/"
           className="text-xl tracking-widest uppercase font-light transition-colors"
           style={{ color: theme.textPrimary }}
           onMouseEnter={(e) => (e.currentTarget.style.color = theme.accent)}
           onMouseLeave={(e) => (e.currentTarget.style.color = theme.textPrimary)}
         >
           Halohouse
-        </button>
+        </Link>
 
         {/* Navigation Links */}
         <div className="hidden lg:flex items-center gap-8">
           {navItems.map((item) => (
-            <button
+            <Link
               key={item.id}
-              ref={item.id === "contact" ? contactRef : null}
-              onClick={() => onNavigate(item.id)}
+              ref={item.id === "/contact" ? contactRef : null}
+              to={item.id}
               className="text-sm tracking-wider uppercase transition-colors relative"
               style={{
-                color: currentPage === item.id ? theme.accent : theme.textSecondary
+                color: isActive(item.id) ? theme.accent : theme.textSecondary
               }}
             >
               {item.label}
-              {currentPage === item.id && (
+              {isActive(item.id) && (
                 <motion.div
                   layoutId="activeNav"
                   className="absolute -bottom-1 left-0 right-0 h-[2px]"
@@ -84,13 +83,13 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}
-            </button>
+            </Link>
           ))}
         </div>
 
         {/* CTA Button */}
-        <button
-          onClick={() => onNavigate('booking')}
+        <Link
+          to="/book-session"
           className="hidden md:block px-6 py-2.5 text-sm tracking-widest uppercase transition-all font-medium"
           style={{
             backgroundColor: theme.accent,
@@ -98,7 +97,7 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
           }}
         >
           Book Now
-        </button>
+        </Link>
       </div>
     </nav>
   );
