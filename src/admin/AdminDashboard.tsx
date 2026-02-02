@@ -21,6 +21,9 @@ const AdminDashboard = () => {
         <Link to="/admin/applications" className="block underline">
           ➜ View Job Applications
         </Link>
+        <Link to="/admin/contact-messages" className="block underline">
+          ➜ View Contact Messages
+        </Link>
       </div>
     </div>
   );

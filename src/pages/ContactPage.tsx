@@ -1,15 +1,133 @@
 import { motion } from "motion/react";
-import { Phone, MessageCircle, Mail, MapPin, ArrowRight } from "lucide-react";
+import { Phone, MessageCircle, Mail, MapPin } from "lucide-react";
+import { useState } from "react";
+import { supabase } from "../lib/supabase";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 export function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  /* ---------------- HELPERS ---------------- */
+
+  const stripHtml = (html: string) => {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div.textContent || div.innerText || "";
+  };
+
+  /* ---------------- INPUT CHANGE ---------------- */
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // 🔥 Live phone validation
+    if (name === "phone") {
+      const normalized = value.replace(/\D/g, "");
+
+      if (normalized.length > 0 && normalized.length < 10) {
+        setPhoneError("Phone number must be 10 digits");
+      } else if (
+        normalized.length === 10 &&
+        !/^[6-9]/.test(normalized)
+      ) {
+        setPhoneError("Phone number must start with 6–9");
+      } else {
+        setPhoneError("");
+      }
+    }
+  };
+
+  /* ---------------- SUBMIT ---------------- */
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setError("");
+    setSuccess("");
+
+    const plainMessage = stripHtml(formData.message).trim();
+    const normalizedPhone = formData.phone.replace(/\D/g, "");
+
+    // Required fields
+    if (
+      !formData.name.trim() ||
+      !formData.email.trim() ||
+      !normalizedPhone ||
+      !plainMessage
+    ) {
+      setError("All fields are required");
+      return;
+    }
+
+    // Email validation
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    // Phone validation (final guard)
+    if (
+      normalizedPhone.length !== 10 ||
+      !/^[6-9]/.test(normalizedPhone)
+    ) {
+      setError("Please enter a valid 10-digit phone number");
+      return;
+    }
+
+    // Block submit if live error exists
+    if (phoneError) {
+      setError(phoneError);
+      return;
+    }
+
+    setLoading(true);
+
+    const { error } = await supabase
+      .from("contact_messages")
+      .insert([
+        {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: normalizedPhone,
+          message: formData.message,
+        },
+      ]);
+
+    if (error) {
+      console.error(error);
+      setError("Failed to send message. Please try again.");
+    } else {
+      setSuccess("Message sent successfully!");
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    }
+
+    setLoading(false);
+  };
+
+  /* ---------------- UI ---------------- */
+
   return (
     <div className="min-h-screen pb-20 bg-background text-foreground">
-
-      {/* CONTACT SECTION */}
       <section className="py-32 px-8 md:px-16 lg:px-24">
         <div className="max-w-[1400px] mx-auto">
 
-          {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -19,130 +137,83 @@ export function ContactPage() {
             <h1>Contact Us</h1>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
 
-            {/* CONTACT INFO */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              className="space-y-10"
-            >
-              <div>
-                <h3 className="mb-6">Get in Touch</h3>
-                <p className="text-foreground/70 max-w-lg">
-                  Ready to create amazing content? Reach out to us through any of these channels and let’s bring your vision to life.
-                </p>
-              </div>
+            {/* INFO */}
+            <div className="space-y-8">
+              <ContactItem icon={Phone} label="Call Now" value="+91 7010017080" href="tel:+917010017080" />
+              <ContactItem icon={MessageCircle} label="WhatsApp" value="Available" href="https://wa.me/917010017080" />
+              <ContactItem icon={Mail} label="Email" value="hello@halohouse.studio" />
+              <ContactItem icon={MapPin} label="Location" value="Mumbai, Maharashtra" />
+            </div>
 
-              <div className="space-y-8">
-                <ContactItem
-                  icon={Phone}
-                  label="Call Now"
-                  value="+91 7010017080"
-                  href="tel:+917010017080"
-                />
+            {/* FORM */}
+            <div className="border p-10">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <Field label="Name *" name="name" value={formData.name} onChange={handleChange} />
+                <Field label="Email *" name="email" type="email" value={formData.email} onChange={handleChange} />
+                <Field label="Phone *" name="phone" value={formData.phone} onChange={handleChange} />
 
-                <ContactItem
-                  icon={MessageCircle}
-                  label="WhatsApp"
-                  value="Available"
-                  href="https://wa.me/917010017080"
-                />
-
-                <ContactItem
-                  icon={Mail}
-                  label="Email"
-                  value="hello@halohouse.studio" href={undefined}                />
-
-                <ContactItem
-                  icon={MapPin}
-                  label="Location"
-                  value="Mumbai, Maharashtra" href={undefined}                />
-              </div>
-            </motion.div>
-
-            {/* CONTACT FORM (TRANSPARENT) */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="bg-transparent border border-border p-10 md:p-12"
-            >
-              <form className="space-y-8">
-                <Field label="Name *" placeholder="Your name" />
-                <Field label="Email *" type="email" placeholder="your@email.com" />
-                <Field label="Phone *" placeholder="+91 00000 00000" />
+                {phoneError && (
+                  <p className="text-red-600 text-sm">{phoneError}</p>
+                )}
 
                 <div>
-                  <label className="block text-sm tracking-widest uppercase text-muted-foreground mb-3">
-                    Message *
-                  </label>
-                  <textarea
-                    rows={6}
-                    className="w-full px-5 py-4 border border-border bg-transparent text-foreground focus:border-primary focus:outline-none resize-none"
-                    placeholder="Tell us about your project..."
+                  <label className="block text-sm uppercase mb-2">Message *</label>
+                  <ReactQuill
+                    theme="snow"
+                    value={formData.message}
+                    onChange={(value) =>
+                      setFormData((prev) => ({ ...prev, message: value }))
+                    }
                   />
                 </div>
 
-                {/* BUTTON — unchanged */}
                 <button
                   type="submit"
-                  className="w-full px-10 py-6 bg-[#FDB913] text-[#0A1628] text-sm tracking-widest uppercase hover:bg-[#FDB913]/90 transition-all font-medium"
+                  disabled={loading || !!phoneError}
+                  className="w-full py-4 bg-[#FDB913] text-black font-medium"
                 >
-                  Send Message
+                  {loading ? "Sending..." : "Send Message"}
                 </button>
+
+                {success && <p className="text-green-600">{success}</p>}
+                {error && <p className="text-red-600">{error}</p>}
               </form>
-            </motion.div>
+            </div>
 
           </div>
         </div>
       </section>
-
-     
     </div>
   );
 }
 
-/* =========================
-   Reusable Components
-========================= */
+/* ---------------- COMPONENTS ---------------- */
 
-function ContactItem({ icon: Icon, label, value, href }) {
+function ContactItem({ icon: Icon, label, value, href }: any) {
   const Wrapper = href ? "a" : "div";
-
   return (
-    <Wrapper
-      href={href}
-      target={href?.startsWith("http") ? "_blank" : undefined}
-      rel="noopener noreferrer"
-      className="flex items-center gap-5 group"
-    >
-      <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-        <Icon className="w-7 h-7 text-primary-foreground" />
-      </div>
+    <Wrapper href={href} target="_blank" className="flex gap-4 items-center">
+      <Icon />
       <div>
-        <p className="text-sm tracking-widest uppercase text-muted-foreground mb-1">
-          {label}
-        </p>
-        <p className="text-xl group-hover:text-primary transition-colors">
-          {value}
-        </p>
+        <p className="text-sm opacity-60">{label}</p>
+        <p>{value}</p>
       </div>
     </Wrapper>
   );
 }
 
-function Field({ label, type = "text", placeholder = "" }) {
+function Field({ label, name, value, onChange, type = "text" }: any) {
   return (
     <div>
-      <label className="block text-sm tracking-widest uppercase text-muted-foreground mb-3">
-        {label}
-      </label>
+      <label className="block text-sm uppercase mb-2">{label}</label>
       <input
+        name={name}
+        value={value}
+        onChange={onChange}
         type={type}
-        placeholder={placeholder}
-        className="w-full px-5 py-4 border border-border bg-transparent text-foreground focus:border-primary focus:outline-none"
+        className="w-full border px-4 py-3"
       />
     </div>
   );

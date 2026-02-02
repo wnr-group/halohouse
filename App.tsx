@@ -21,6 +21,8 @@ import AdminDashboard from "./src/admin/AdminDashboard";
 import AdminBookings from "./src/admin/AdminBookings";
 import AdminApplications from "./src/admin/AdminApplications";
 import AdminJobsList from "./src/admin/AdminJobsList";
+import AdminContactMessages from "./src/admin/AdminContactMessages";
+
 import EditJob from "./src/admin/EditJob";
 /* ---------------- ERROR BOUNDARY ---------------- */
 
@@ -98,7 +100,8 @@ function AppContent() {
     <Route path="jobs/:id/edit" element={<EditJob />} />
     <Route path="bookings" element={<AdminBookings />} />
     <Route path="applications" element={<AdminApplications />} />
-    
+    <Route path="contact-messages" element={<AdminContactMessages />} />
+
   </Route>
 
   {/* PUBLIC ROUTES */}
