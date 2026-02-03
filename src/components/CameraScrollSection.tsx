@@ -10,11 +10,52 @@ export function CameraScrollSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
+  const mobileTlRef = useRef<gsap.core.Timeline | null>(null);
+
   const [isLoaded, setIsLoaded] = useState(false);
 
+type DeviceMode = "mobile-portrait" | "tablet-landscape" | "desktop";
+const [deviceMode, setDeviceMode] = useState<DeviceMode>("desktop");
+
+
+
+useLayoutEffect(() => {
+  const detectDevice = () => {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    if (w < 768 && h > w) {
+      setDeviceMode("mobile-portrait");
+    } else if (w < 1024) {
+      setDeviceMode("tablet-landscape");
+    } else {
+      setDeviceMode("desktop");
+    }
+  };
+
+  detectDevice(); // on page load
+  window.addEventListener("resize", detectDevice);
+
+  return () => window.removeEventListener("resize", detectDevice);
+}, []);
+
   useLayoutEffect(() => {
-   
+  const enableCameraAnimation = deviceMode !== "mobile-portrait";
+
+  const enableMobileBrandAnimation = deviceMode === "mobile-portrait";
+
+
+const isMobilePortrait = deviceMode === "mobile-portrait";
+
+
+
+
     if (!containerRef.current || !canvasRef.current) return;
+
+     mobileTlRef.current?.kill();
+     mobileTlRef.current = null;
+
+
 
     // --- SETUP SCENE ---
     const scene = new THREE.Scene();
@@ -37,6 +78,12 @@ const camera = new THREE.PerspectiveCamera(
 );
    
     camera.position.set(0, 5, 80); // Offset camera slightly up to center the model view
+
+
+    if (!containerRef.current || !canvasRef.current) return;
+
+// ⛔ prevent duplicate WebGL contexts
+canvasRef.current.innerHTML = "";
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -83,24 +130,48 @@ canvasRef.current.appendChild(renderer.domElement);
         const center = box.getCenter(new THREE.Vector3());
         model.position.sub(center);
 
-        model.scale.set(250, 250, 250);
-        model.position.set(0, 0, 0);
+     model.position.set(0, 0, 0);
+modelGroup.rotation.set(0.1, -0.3, 0);
 
-        modelGroup.rotation.set(0.1, -0.3, 0);
-        modelGroup.position.set(-20, -5, 0); // Start positioned on the left and slightly lower
+if (isMobilePortrait) {
+  // STATIC PRODUCT SHOT (MOBILE FIX)
+  camera.fov = 30;
+  camera.updateProjectionMatrix();
+
+  
+  model.scale.set(175, 175, 175);
+  // center the model
+  modelGroup.position.set(0, 0, 0);
+
+  // center camera vertically
+  camera.position.set(0, 4.5, 95);
+} else {
+  // TABLET + DESKTOP (your original behavior)
+  model.scale.set(250, 250, 250);
+  modelGroup.position.set(-20, -5, 0);
+  camera.position.set(0, 5, 80);
+}
+
         modelGroup.add(model);
         setIsLoaded(true);
 
         gsap.set(renderer.domElement, { opacity: 1 });
 
+      
+
+
+
+        let tl: gsap.core.Timeline | null = null;
+
         // --- GSAP TIMELINE ---
-        const tl = gsap.timeline({
+        if (enableCameraAnimation) {
+         tl = gsap.timeline({
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top top",
             end: "+=500%",
             scrub: 1.5,
-            pin: true,
+            pin: !isMobilePortrait,
             pinSpacing: true,
             anticipatePin: 1,
           }
@@ -126,6 +197,7 @@ canvasRef.current.appendChild(renderer.domElement);
         tl.to("#brand-panel", { opacity: 0, duration: 0.6 }, "stage4");
 
         // 3D CAMERA ANIMATION - Keep camera centered and on the left side
+        if(!isMobilePortrait){
         tl.to(model.scale, { x: 220, y: 220, z: 220, duration: 2, ease: "power2.inOut" }, "stage1")
           .to(modelGroup.rotation, { y: Math.PI * 0.5, duration: 2, ease: "power2.inOut" }, "stage1")
           .to(modelGroup.position, { x: -20, y: -5, z: 0, duration: 2, ease: "power2.inOut" }, "stage1");
@@ -139,10 +211,18 @@ canvasRef.current.appendChild(renderer.domElement);
 
         tl.to(modelGroup.position, { z: -100, duration: 1, ease: "power3.in" }, "stage4")
           .to(renderer.domElement, { opacity: 0, duration: 1 }, "stage4");
+        }
+        
+      }
 
-        // Initial alignment
-        ScrollTrigger.refresh();
-      },
+
+     
+
+
+ScrollTrigger.refresh();
+
+
+    },
       undefined,
       (err) => console.error("Error loading model:", err)
     );
@@ -166,32 +246,77 @@ canvasRef.current.appendChild(renderer.domElement);
     };
     animate();
 
+
+    if (deviceMode === "mobile-portrait") {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      gsap.set(
+        [".mobile-brand-1", ".mobile-brand-2", ".mobile-brand-3"],
+        { opacity: 0, y: 40 }
+      );
+
+      gsap.set(".mobile-brand-1", { opacity: 1, y: 0 });
+
+      mobileTlRef.current = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".mobile-brand-section",
+          start: "top top",
+          end: "+=300%",
+          scrub: true,
+          pin: true,
+          pinSpacing: true,
+          anticipatePin: 1,
+        },
+      })
+        .to(".mobile-brand-1", { opacity: 0, y: -40 })
+        .to(".mobile-brand-2", { opacity: 1, y: 0 })
+        .to(".mobile-brand-2", { opacity: 0, y: -40 })
+        .to(".mobile-brand-3", { opacity: 1, y: 0 });
+
+      ScrollTrigger.refresh(true);
+      window.scrollTo(0, 0);
+    });
+  });
+}
+
     return () => {
-      window.removeEventListener("resize", handleResize);
+      
       cancelAnimationFrame(reqId);
-      ScrollTrigger.getAll().forEach(st => {
-        if (st.trigger === containerRef.current) st.kill();
-      });
+
+       
+    ScrollTrigger.getAll().forEach(st => st.kill());
+    mobileTlRef.current?.kill();
+mobileTlRef.current = null;
+
+    
       renderer.dispose();
-      if (canvasRef.current?.contains(renderer.domElement)) {
-        canvasRef.current.removeChild(renderer.domElement);
-      }
+       canvasRef.current?.replaceChildren();
     };
+
+    
   }, []);
 
   return (
     <>
       
       <div
-        ref={containerRef}
-        className="relative w-full overflow-hidden"
-        style={{ height: "100vh", backgroundColor: "#F5E6D3" }}
-      >
-        <div ref={canvasRef} className="absolute inset-0 z-20" 
-          style={{ width: "100%", height: "100%" }}
-        />
+  ref={containerRef}
+  className="relative w-full overflow-hidden"
+  style={{
+    height: deviceMode === "mobile-portrait" ? "100vh" : "100vh",
+    backgroundColor: "#F5E6D3",
+  }}
+>
+  <div
+    ref={canvasRef}
+    className="absolute inset-0 z-20"
+    style={{ width: "100%", height: "100%" }}
+  />
+       
+   {deviceMode !== "mobile-portrait" && (
+  <div className="absolute inset-0 z-10 pointer-events-none flex items-center">
 
-        <div className="absolute inset-0 z-10 pointer-events-none hidden md:flex items-center">
+
           <div ref={innerRef} className="relative max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24 w-full h-full flex items-center">
             <div id="brand-panel" className="absolute right-8 md:right-16 lg:right-24 top-1/2 -translate-y-1/2 w-[500px] text-right opacity-0">
               <div className="relative min-h-[500px] flex flex-col justify-center">
@@ -223,6 +348,7 @@ canvasRef.current.appendChild(renderer.domElement);
             </div>
           </div>
         </div>
+   )}   
 
         {!isLoaded && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#0A1628] text-white">
@@ -230,6 +356,62 @@ canvasRef.current.appendChild(renderer.domElement);
           </div>
         )}
       </div>
+
+{deviceMode === "mobile-portrait" && (
+  <section className="mobile-brand-section relative w-full h-screen bg-[#F5E6D3] overflow-hidden">
+
+    <div className="relative h-screen max-w-[600px] mx-auto px-4 flex items-center justify-center">
+
+      {/* Brand 1 */}
+      <div className="mobile-brand-1 absolute inset-0 flex flex-col items-center justify-center text-center opacity-0">
+        <img
+          src="/src/assets/brand/brand-1.png"
+          className="w-full max-w-xs mb-6 rounded-xl shadow-lg"
+          alt=""
+        />
+        <h2 className="text-3xl font-light text-[#0A1628]">
+          Crafted for Creators
+        </h2>
+        <p className="mt-3 text-lg text-[#0A1628]/65">
+          A studio-grade camera experience.
+        </p>
+      </div>
+
+      {/* Brand 2 */}
+      <div className="mobile-brand-2 absolute inset-0 flex flex-col items-center justify-center text-center opacity-0">
+        <img
+          src="/src/assets/brand/brand-2.png"
+          className="w-full max-w-xs mb-6 rounded-xl shadow-lg"
+          alt=""
+        />
+        <h2 className="text-3xl font-light text-[#0A1628]">
+          Precision Engineering
+        </h2>
+        <p className="mt-3 text-lg text-[#0A1628]/65">
+          Designed to capture every detail.
+        </p>
+      </div>
+
+      {/* Brand 3 */}
+      <div className="mobile-brand-3 absolute inset-0 flex flex-col items-center justify-center text-center opacity-0">
+        <img
+          src="/src/assets/brand/brand-3.png"
+          className="w-full max-w-xs mb-6 rounded-xl shadow-lg"
+          alt=""
+        />
+        <h2 className="text-3xl font-light text-[#0A1628]">
+          Built to Inspire
+        </h2>
+        <p className="mt-3 text-lg text-[#0A1628]/65">
+          Where creativity meets performance.
+        </p>
+      </div>
+
+    </div>
+  </section>
+)}
+
+     
     </>
   );
 }

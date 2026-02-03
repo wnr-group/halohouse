@@ -5,6 +5,7 @@ import { BrandSlider } from "../components/BrandSlider";
 import { KeyStats } from "../components/KeyStats";
 import { StudioSection } from "../components/StudioSection";
 
+
 import { HeroVideo } from "../components/ui/HeroVideo";
 
 function HeroSection() {
@@ -37,9 +38,12 @@ function HeroSection() {
       <div className="grid grid-cols-1 lg:grid-cols-2 w-full pb-8 relative z-10">
         
         {/* LEFT COLUMN: Text Content */}
-        <div className="flex items-center justify-center px-8 md:px-10 lg:px-8 pt-4 pb-20">
+        <div className="flex items-start md:items-center justify-center px-8 md:px-10 lg:px-8 pt-20 md:pt-4 pb-20">
+
           <div className="max-w-xl">
-            <h1 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light mb-8 leading-[0.9]">
+           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light mb-8 leading-[0.9]">
+
+
               <span 
                 className="block italic"
                 style={{ 
