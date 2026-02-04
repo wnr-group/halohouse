@@ -1,5 +1,5 @@
 {
-      "name": "Modern Landing Page Design",
+      "name": "Halo House",
       "version": "0.1.0",
       "private": true,
       "dependencies": {
@@ -31,6 +31,8 @@
             "@radix-ui/react-tooltip": "^1.1.8",
             "@react-three/drei": "^9.100.0",
             "@react-three/fiber": "^8.15.16",
+            "@supabase/supabase-js": "^2.93.1",
+            "@tailwindcss/vite": "^4.1.18",
             "class-variance-authority": "^0.7.1",
             "clsx": "*",
             "cmdk": "^1.1.1",
@@ -44,10 +46,13 @@
             "react-day-picker": "^8.10.1",
             "react-dom": "^18.3.1",
             "react-hook-form": "^7.55.0",
+            "react-quill": "^2.0.0",
             "react-resizable-panels": "^2.1.7",
+            "react-router-dom": "^7.13.0",
             "recharts": "^2.15.2",
             "sonner": "^2.0.3",
             "tailwind-merge": "*",
+            "tailwindcss": "^4.1.18",
             "three": "^0.160.0",
             "vaul": "^1.1.2"
       },
@@ -55,6 +60,7 @@
             "@types/node": "^20.10.0",
             "@types/react": "^18.3.27",
             "@types/react-dom": "^18.3.7",
+            "@types/react-router-dom": "^5.3.3",
             "@vitejs/plugin-react-swc": "^3.10.2",
             "vite": "6.3.5"
       },
