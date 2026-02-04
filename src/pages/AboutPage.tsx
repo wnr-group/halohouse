@@ -1,5 +1,7 @@
 import { motion } from "motion/react";
 import { History, Target, Sparkles } from "lucide-react";
+import studio from "../assets/studio.avif";
+
 
 export function AboutPage() {
   return (
@@ -35,7 +37,7 @@ export function AboutPage() {
             className="relative h-[320px] md:h-[420px] lg:h-[460px] rounded-md overflow-hidden border border-border"
           >
             <img
-              src="https://img.freepik.com/premium-photo/professional-podcast-studio-empty-interior_1034303-5214.jpg"
+              src={studio}
               alt="HALO House Podcast Studio"
               className="w-full h-full object-cover"
             />

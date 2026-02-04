@@ -164,11 +164,93 @@ export function CareersPage() {
         </div>
       </section>
 
+<section className="py-2">
+  <div className="max-w-[1200px] mx-auto px-8 md:px-16 lg:px-24">
+    <h3 className="text-2xl font-light mb-6">Work Culture</h3>
+
+    <p className="text-foreground/70 max-w-2xl leading-relaxed">
+      At HALO House, we thrive on creativity, collaboration, and ownership.
+      We value people who care deeply about their craft and are excited to
+      build meaningful visual stories together.
+    </p>
+  </div>
+</section>
+
+
+<section className="py-10">
+  <div className="max-w-[1200px] mx-auto px-8 md:px-16 lg:px-24">
+    <h3 className="text-2xl font-light mb-6">Hybrid Culture</h3>
+
+    <p className="text-foreground/70 max-w-2xl leading-relaxed">
+      We follow a hybrid work culture that balances flexibility with
+      collaboration. While remote work is supported, studio presence is
+      encouraged whenever creative alignment and production demand it.
+    </p>
+  </div>
+</section>
+
+<section className="py-2" >
+  <div className="max-w-[1200px] mx-auto px-8 md:px-16 lg:px-24">
+    <h3 className="text-2xl font-light mb-6">Expectations for New Hires</h3>
+
+    <ul className="space-y-3 text-foreground/70 max-w-2xl">
+      <li>• Passion for visual storytelling and content creation</li>
+      <li>• Willingness to learn and adapt quickly</li>
+      <li>• Strong attention to detail and quality</li>
+      <li>• Ownership mindset and accountability</li>
+    </ul>
+  </div>
+</section>
+
+<section className="py-8">
+  <div className="max-w-[1200px] mx-auto px-8 md:px-16 lg:px-24">
+    <h3 className="text-2xl font-light mb-12">Roles We Work With</h3>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {[
+        "Editor",
+        "Cinematography",
+        "Content Creation",
+        "Operations Lead",
+        "Sales Lead",
+        "Digital Marketing",
+        "Internship",
+      ].map((role) => (
+        <div
+          key={role}
+          className="border border-border rounded-lg p-6 bg-background hover:border-primary/40 transition"
+        >
+          <h4 className="text-lg font-medium mb-2">{role}</h4>
+          <p className="text-sm text-foreground/70">
+            Join our team and contribute to building impactful visual stories
+            and creative campaigns.
+          </p>
+
+          
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section className="py-5">
+  <div className="max-w-[1200px] mx-auto px-8 md:px-16 lg:px-24">
+    <h3 className="text-2xl font-light mb-6">Common Details</h3>
+
+    <ul className="space-y-3 text-foreground/70">
+      <li>• Experience (role dependent)</li>
+      <li>• Portfolio / Resume</li>
+      <li>• Contact Number</li>
+      <li>• Location</li>
+      <li>• Hybrid work culture</li>
+    </ul>
+  </div>
+</section>
 
 
 
-      <div ref={jobsRef} className="max-w-[1400px] mx-auto px-8 md:px-16 lg:px-24 ">
-        <h3 className="text-2xl font-medium mb-8">Open Positions</h3>
+      <div ref={jobsRef} className="max-w-[1400px] py-5 mx-auto px-8 md:px-16 lg:px-24 ">
+        <h3 className="text-2xl  font-medium mb-8">Open Positions</h3>
       </div>
 
       <div className="max-w-[1400px] mx-auto px-8 md:px-16 lg:px-24">
