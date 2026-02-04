@@ -4,6 +4,7 @@ import { CameraScrollSection } from "../components/CameraScrollSection";
 import { BrandSlider } from "../components/BrandSlider";
 import { KeyStats } from "../components/KeyStats";
 import { StudioSection } from "../components/StudioSection";
+import {Testimonials} from "../components/Testimonials";
 
 
 import { HeroVideo } from "../components/ui/HeroVideo";
@@ -129,8 +130,12 @@ export function HomePage() {
       {/* SECTION 4: STUDIO SECTION (Separate section, no nesting) */}
       <StudioSection /> 
 
-      {/* SECTION 4: KEY STATS (Separate section, no nesting) */}
+      {/* SECTION 5: KEY STATS (Separate section, no nesting) */}
       <KeyStats />
+
+
+      {/* SECTION 6: TESTIMONIALS (Separate section, no nesting) */}
+      <Testimonials />
       </div>
       
     </>

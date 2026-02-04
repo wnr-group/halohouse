@@ -49,7 +49,14 @@
   --color-foreground: var(--foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
+
+  /*  REQUIRED FOR STARS */
+  --color-primary: var(--primary);
+  --color-muted-foreground: var(--muted-foreground);
 }
+
+
+
 
 /* =========================
    BASE LAYER (IMPORTANT)
