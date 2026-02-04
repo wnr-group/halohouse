@@ -4,6 +4,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
+// Import the model so Vite can handle it properly
+import cameraModelUrl from "../assets/models/canon_at-1_retro_camera.glb?url";
+
 gsap.registerPlugin(ScrollTrigger);
 
 export function CameraScrollSection() {
@@ -123,7 +126,7 @@ canvasRef.current.appendChild(renderer.domElement);
     let model: THREE.Group | null = null;
 
     loader.load(
-      "/src/assets/models/canon_at-1_retro_camera.glb",
+      cameraModelUrl,
       (gltf) => {
         model = gltf.scene;
         const box = new THREE.Box3().setFromObject(model);
