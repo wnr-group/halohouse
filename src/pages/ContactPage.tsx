@@ -141,10 +141,10 @@ export function ContactPage() {
 
             {/* INFO */}
             <div className="space-y-8">
-              <ContactItem icon={Phone} label="Call Now" value="+91 7010017080" href="tel:+917010017080" />
+              <ContactItem icon={Phone} label="Call Now" value="+91 8754706742" href="tel:+918754706742" />
               <ContactItem icon={MessageCircle} label="WhatsApp" value="Available" href="https://wa.me/917010017080" />
               <ContactItem icon={Mail} label="Email" value="hello@halohouse.studio" />
-              <ContactItem icon={MapPin} label="Location" value="Mumbai, Maharashtra" />
+              <ContactItem icon={MapPin} label="Location" value="Philomina nagar Thanjavur, Sholingnallur Chennai." />
             </div>
 
             {/* FORM */}
