@@ -339,7 +339,7 @@ export function CameraScrollSection() {
                   </div>
                   {/* Brand 2 */}
                   <div id="brand-2" data-alt="brand-2" className="absolute inset-0 flex flex-col items-end justify-center text-right opacity-0">
-                    <img src={brand2} alt="" className="w-96 h-auto mb-8 rounded-2xl shadow-xl" />
+                    <img src={brand2} alt="Creative podcast studio brand identity designed for content creators" className="w-96 h-auto mb-8 rounded-2xl shadow-xl" />
                     <div className="space-y-4">
                       <h2 className="text-[3.25rem] font-light tracking-tight leading-tight text-[#0A1628]">Precision Engineering</h2>
                       <p className="mt-2 text-xl text-[#0A1628]/65 max-w-md ml-auto">Designed to capture every detail.</p>
@@ -347,7 +347,7 @@ export function CameraScrollSection() {
                   </div>
                   {/* Brand 3 */}
                   <div id="brand-3" data-alt="brand-3" className="absolute inset-0 flex flex-col items-end justify-center text-right opacity-0">
-                    <img src={brand3} alt="" className="w-96 h-auto mb-8 rounded-2xl shadow-xl" />
+                    <img src={brand3} alt="Modern podcast studio visual branding for professional creators" className="w-96 h-auto mb-8 rounded-2xl shadow-xl" />
                     <div className="space-y-4">
                       <h2 className="text-[3.25rem] font-light tracking-tight leading-tight text-[#0A1628]">Built to Inspire</h2>
                       <p className="mt-2 text-xl text-[#0A1628]/65 max-w-md ml-auto">Where creativity meets performance.</p>
@@ -376,7 +376,7 @@ export function CameraScrollSection() {
               <img
                 src={brand1}
                 className="w-full max-w-xs mb-6 rounded-xl shadow-lg"
-                alt=""
+                alt="Professional podcast studio branding representing a creator-focused recording space"
               />
               <h2 className="text-3xl font-light text-[#0A1628]">
                 Crafted for Creators
@@ -391,7 +391,7 @@ export function CameraScrollSection() {
               <img
                 src={brand2}
                 className="w-full max-w-xs mb-6 rounded-xl shadow-lg"
-                alt=""
+                alt="Creative podcast studio brand identity designed for content creators"
               />
               <h2 className="text-3xl font-light text-[#0A1628]">
                 Precision Engineering
@@ -406,7 +406,7 @@ export function CameraScrollSection() {
               <img
                 src={brand3}
                 className="w-full max-w-xs mb-6 rounded-xl shadow-lg"
-                alt=""
+                alt="Modern podcast studio visual branding for professional creators"
               />
               <h2 className="text-3xl font-light text-[#0A1628]">
                 Built to Inspire
