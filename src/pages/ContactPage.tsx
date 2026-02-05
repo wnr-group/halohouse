@@ -1,5 +1,7 @@
 import { motion } from "motion/react";
-import { Phone, MessageCircle, Mail, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin, Instagram, Youtube, Twitter, MessageCircle } from "lucide-react";
+import { SEO } from "../components/SEO";
+
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import ReactQuill from "react-quill";
@@ -37,7 +39,7 @@ export function ContactPage() {
 
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // 🔥 Live phone validation
+    //  Live phone validation
     if (name === "phone") {
       const normalized = value.replace(/\D/g, "");
 
@@ -124,7 +126,11 @@ export function ContactPage() {
   /* ---------------- UI ---------------- */
 
   return (
-    <div className="min-h-screen pb-20 bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground pt-32 pb-20">
+      <SEO
+        title="Contact Us | Get in Touch | Halo House Podcast Studio"
+        description="Have questions or want to tour the studio? Contact the Halo House team today for bookings and inquiries."
+      />
       <section className="py-32 px-8 md:px-16 lg:px-24">
         <div className="max-w-[1400px] mx-auto">
 
@@ -143,7 +149,7 @@ export function ContactPage() {
             <div className="space-y-8">
               <ContactItem icon={Phone} label="Call Now" value="+91 8754706742" href="tel:+918754706742" />
               <ContactItem icon={MessageCircle} label="WhatsApp" value="Available" href="https://wa.me/917010017080" />
-              <ContactItem icon={Mail} label="Email" value="hello@halohouse.studio" />
+              <ContactItem icon={Mail} label="Email" value="halohousechennai@gmail.com" />
               <ContactItem icon={MapPin} label="Location" value="Philomina nagar Thanjavur, Sholingnallur Chennai." />
             </div>
 

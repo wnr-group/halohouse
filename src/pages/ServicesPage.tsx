@@ -7,6 +7,7 @@ import {
   User,
   Film
 } from "lucide-react";
+import { SEO } from "../components/SEO";
 
 export function ServicesPage() {
   const services = [
@@ -50,6 +51,10 @@ export function ServicesPage() {
 
   return (
     <div className="min-h-screen pt-32 pb-20 bg-background text-foreground">
+      <SEO
+        title="Our Services | Podcast & Video Production | Halo House"
+        description="From recording to post-production, discover the professional services Halo House offers to elevate your content."
+      />
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24">
         {/* Page Header */}
         <motion.div

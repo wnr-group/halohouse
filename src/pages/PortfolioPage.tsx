@@ -1,5 +1,7 @@
-import { motion } from 'motion/react';
-import { Play } from 'lucide-react';
+import { motion } from "motion/react";
+import { Play, ExternalLink, MessageSquare, Video, Mic } from "lucide-react";
+import { SEO } from "../components/SEO";
+
 
 export function PortfolioPage() {
   const portfolioItems = [
@@ -16,7 +18,11 @@ export function PortfolioPage() {
   ];
 
   return (
-    <div className="min-h-screen pt-32 pb-20">
+    <div className="min-h-screen bg-background pt-32 pb-20">
+      <SEO
+        title="Our Portfolio | Featured Creative Work | Halo House"
+        description="Explore the premium podcasts and videos created at Halo House. See the quality we deliver for creators like you."
+      />
 
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24">
         {/* Page Header */}

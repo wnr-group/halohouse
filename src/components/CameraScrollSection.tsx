@@ -8,9 +8,9 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import cameraModelUrl from "../assets/models/canon_at-1_retro_camera.glb?url";
 
 // Import brand images
-import brand1 from "../assets/brand/brand-1.png";
-import brand2 from "../assets/brand/brand-2.png";
-import brand3 from "../assets/brand/brand-3.png";
+import brand1 from "../assets/brand/podcast-studio-branding.webp"
+import brand2 from "../assets/brand/creator-studio-brand-identity.webp";
+import brand3 from "../assets/brand/content-creation-studio-brand.webp";
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -330,15 +330,15 @@ export function CameraScrollSection() {
               <div id="brand-panel" className="absolute right-8 md:right-16 lg:right-24 top-1/2 -translate-y-1/2 w-[500px] text-right opacity-0">
                 <div className="relative min-h-[500px] flex flex-col justify-center">
                   {/* Brand 1 */}
-                  <div id="brand-1" className="absolute inset-0 flex flex-col items-end justify-center text-right">
-                    <img src={brand1} alt="" className="w-96 h-auto mb-8 rounded-2xl shadow-xl" />
+                  <div id="brand-1" data-alt="brand-1" className="absolute inset-0 flex flex-col items-end justify-center text-right">
+                    <img src={brand1} alt="Podcast studio brand identity representing a professional creator studio" className="w-96 h-auto mb-8 rounded-2xl shadow-xl" />
                     <div className="space-y-4">
                       <h2 className="text-[3.25rem] font-light tracking-tight leading-tight text-[#0A1628]">Crafted for Creators</h2>
                       <p className="mt-2 text-xl text-[#0A1628]/65 max-w-md ml-auto">A studio-grade camera experience.</p>
                     </div>
                   </div>
                   {/* Brand 2 */}
-                  <div id="brand-2" className="absolute inset-0 flex flex-col items-end justify-center text-right opacity-0">
+                  <div id="brand-2" data-alt="brand-2" className="absolute inset-0 flex flex-col items-end justify-center text-right opacity-0">
                     <img src={brand2} alt="" className="w-96 h-auto mb-8 rounded-2xl shadow-xl" />
                     <div className="space-y-4">
                       <h2 className="text-[3.25rem] font-light tracking-tight leading-tight text-[#0A1628]">Precision Engineering</h2>
@@ -346,7 +346,7 @@ export function CameraScrollSection() {
                     </div>
                   </div>
                   {/* Brand 3 */}
-                  <div id="brand-3" className="absolute inset-0 flex flex-col items-end justify-center text-right opacity-0">
+                  <div id="brand-3" data-alt="brand-3" className="absolute inset-0 flex flex-col items-end justify-center text-right opacity-0">
                     <img src={brand3} alt="" className="w-96 h-auto mb-8 rounded-2xl shadow-xl" />
                     <div className="space-y-4">
                       <h2 className="text-[3.25rem] font-light tracking-tight leading-tight text-[#0A1628]">Built to Inspire</h2>

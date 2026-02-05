@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { Quote, Plus, Minus } from 'lucide-react';
 import { useState } from 'react';
+import { SEO } from "../components/SEO";
 
 export function FeedbackPage() {
   const testimonials = [
@@ -56,7 +57,11 @@ export function FeedbackPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen pt-32 pb-20">
+    <div className="min-h-screen bg-[#0A1628]">
+      <SEO
+        title="Share Your Feedback | Help Us Improve | Halo House"
+        description="We value your experience at Halo House. Share your feedback and help us continue to provide the best studio environment for creators."
+      />
       {/* Customer Feedback Section */}
       <section className="py-20 px-8 md:px-16 lg:px-24 bg-[#0A1628]">
         <div className="max-w-[1600px] mx-auto">
@@ -85,7 +90,7 @@ export function FeedbackPage() {
                 className="bg-[#1A2638] border border-[#FDB913]/20 p-10 md:p-12"
               >
                 <Quote className="w-12 h-12 text-[#FDB913]/40 mb-8" strokeWidth={1} />
-                
+
                 <p className="text-lg md:text-xl text-[#F5E6D3]/80 font-light leading-relaxed mb-8 italic">
                   "{testimonial.text}"
                 </p>
@@ -123,7 +128,7 @@ export function FeedbackPage() {
           <div className="space-y-4">
             {faqs.map((faq, index) => {
               const isOpen = openIndex === index;
-              
+
               return (
                 <motion.div
                   key={index}
@@ -146,7 +151,7 @@ export function FeedbackPage() {
                       <Plus className="w-6 h-6 text-[#FDB913] flex-shrink-0" strokeWidth={1.5} />
                     )}
                   </button>
-                  
+
                   {isOpen && (
                     <motion.div
                       initial={{ height: 0, opacity: 0 }}
