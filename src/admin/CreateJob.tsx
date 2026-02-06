@@ -9,9 +9,7 @@ const CreateJob = () => {
     location: "",
     type: "Full-time",
     experience: "",
-    description: "",
     responsibilities: "",
-    requirements: "",
     status: "draft",
   });
 
