@@ -3,6 +3,8 @@ import maxfashion from "../assets/client/max-fashion.webp";
 import AATCHIYAR  from "../assets/client/AATCHIYAR.webp";
 import ProfessionalCourier from "../assets/client/the_professional_couriers.webp";
 import VVETRI from "../assets/client/VVETRI.webp";
+import WNR from "../assets/client/WNR.webp";
+import Perfect from "../assets/client/Perfect.webp";
 
 interface BrandLogo {
   name: string;
@@ -14,6 +16,8 @@ const brands: BrandLogo[] = [
   { name: 'ProfessionalCourier', logo: ProfessionalCourier},
   { name: 'VVETRI', logo: VVETRI},
   { name: 'MAXFASHION', logo: maxfashion},
+  { name: "WNR", logo: WNR },
+  { name: "Perfect", logo: Perfect },
   
 ];
 

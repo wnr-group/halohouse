@@ -7,6 +7,7 @@ import { useState } from "react";
 
 export function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
+const SHOW_BOOKING_PAGE = false;
 
   const theme = useTheme();
   const contactRef = useRef<HTMLAnchorElement | null>(null);
@@ -47,7 +48,10 @@ const scrollToTop = () => {
     { id: '/services', label: 'Services' },
     { id: '/about', label: 'About' },
     { id: '/careers', label: 'Careers' },
-    { id: '/book-session', label: 'Book Session' },
+    //{ id: '/book-session', label: 'Book Session' },
+     ...(SHOW_BOOKING_PAGE
+    ? [{ id: "booking", label: "Book Session" }]
+    : []),
     { id: '/contact', label: 'Contact' }
   ];
 
