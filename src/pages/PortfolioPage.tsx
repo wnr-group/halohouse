@@ -4,13 +4,12 @@ import { Play } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Volume2, VolumeX } from "lucide-react";
 
-
 import CarRace from "../assets/Portfolio/car-race-project-out.mov";
 import KeralaAi from "../assets/Portfolio/Kerala-Ai created video.mp4";
 import NeuroOut from "../assets/Portfolio/Neuro-out.mp4";
 import Valentine from "../assets/Portfolio/Feb 5 - valentine_.mp4";
 import DenimJacket from "../assets/Portfolio/Denim-Jacket.mp4";
-import HarryPotter from "../assets/Portfolio/Harry-Potter.mp4";
+import HarryPotter from "../assets/Portfolio/Harry-potter.mp4";
 import Comfort from "../assets/Portfolio/Comfort.mp4";
 import KeralaShake from "../assets/Portfolio/kerala-shake.mp4";
 import Upsc from "../assets/Portfolio/Upsc.mp4";
@@ -18,8 +17,7 @@ import Upsc from "../assets/Portfolio/Upsc.mp4";
 export function PortfolioPage() {
   // Detect mobile (no hover devices)
   const isMobile =
-    typeof window !== "undefined" &&
-    window.matchMedia("(hover: none)").matches;
+    typeof window !== "undefined" && window.matchMedia("(hover: none)").matches;
 
   // Track currently playing video
   const activeVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -29,7 +27,12 @@ export function PortfolioPage() {
     { id: 2, title: "Kerala AI", category: "Reels", video: KeralaAi },
     { id: 3, title: "Neuro", category: "Studio", video: NeuroOut },
     { id: 4, title: "Valentine", category: "Reels", video: Valentine },
-    { id: 5, title: "Denim Jacket", category: "Commercial", video: DenimJacket },
+    {
+      id: 5,
+      title: "Denim Jacket",
+      category: "Commercial",
+      video: DenimJacket,
+    },
     { id: 6, title: "Harry Potter", category: "Reels", video: HarryPotter },
     { id: 7, title: "Comfort", category: "Commercial", video: Comfort },
     { id: 8, title: "Kerala Shake", category: "Reels", video: KeralaShake },
@@ -97,10 +100,7 @@ export function PortfolioPage() {
 
               const video = videoRef.current;
 
-              if (
-                activeVideoRef.current &&
-                activeVideoRef.current !== video
-              ) {
+              if (activeVideoRef.current && activeVideoRef.current !== video) {
                 activeVideoRef.current.pause();
                 activeVideoRef.current.currentTime = 0;
               }
@@ -117,11 +117,7 @@ export function PortfolioPage() {
               }
             };
 
-
-
             return (
-
-
               <motion.div
                 key={item.id}
                 className="group relative aspect-[9/16] bg-white rounded-lg border border-border overflow-hidden"
@@ -161,11 +157,11 @@ export function PortfolioPage() {
                   )}
                 </div>
 
-
                 {/* Play Icon */}
                 <div
-                  className={`absolute inset-0 flex items-center justify-center transition-opacity ${isPlaying ? "opacity-0" : "opacity-80"
-                    }`}
+                  className={`absolute inset-0 flex items-center justify-center transition-opacity ${
+                    isPlaying ? "opacity-0" : "opacity-80"
+                  }`}
                 >
                   <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
                     <Play className="w-8 h-8 text-primary-foreground ml-1" />
