@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, useEffect } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as THREE from "three";
@@ -8,69 +8,73 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import cameraModelUrl from "../assets/models/canon_at-1_retro_camera.glb?url";
 
 // Import brand images
-import brand1 from "../assets/brand/brand-1.png";
-import brand2 from "../assets/brand/brand-2.png";
-import brand3 from "../assets/brand/brand-3.png";
+import brand1 from "../assets/brand/podcast-studio-branding.webp";
+import brand2 from "../assets/brand/creator-studio-brand-identity.webp";
+import brand3 from "../assets/brand/content-creation-studio-brand.webp";
 
 gsap.registerPlugin(ScrollTrigger);
-
-type DeviceMode = "mobile" | "desktop";
 
 export function CameraScrollSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const animationIdRef = useRef<number>(0);
+  const mobileSectionRef = useRef<HTMLElement>(null);
+  const mobilePinRef = useRef<HTMLDivElement>(null);
 
   const [isLoaded, setIsLoaded] = useState(false);
-  const [deviceMode, setDeviceMode] = useState<DeviceMode>(() =>
-    typeof window !== "undefined" && window.innerWidth < 768
-      ? "mobile"
-      : "desktop",
-  );
 
-  // Device detection - only on resize, debounced
-  useEffect(() => {
-    let resizeTimer: ReturnType<typeof setTimeout>;
+  type DeviceMode = "mobile-portrait" | "tablet-landscape" | "desktop";
+  const [deviceMode, setDeviceMode] = useState<DeviceMode>("desktop");
 
-    const handleResize = () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        const newMode = window.innerWidth < 768 ? "mobile" : "desktop";
-        setDeviceMode((prev) => (prev !== newMode ? newMode : prev));
-      }, 150);
+  useLayoutEffect(() => {
+    const detectDevice = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      if (w < 768 && h > w) {
+        setDeviceMode("mobile-portrait");
+      } else if (w < 1024) {
+        setDeviceMode("tablet-landscape");
+      } else {
+        setDeviceMode("desktop");
+      }
     };
 
-    window.addEventListener("resize", handleResize);
-    return () => {
-      clearTimeout(resizeTimer);
-      window.removeEventListener("resize", handleResize);
-    };
+    detectDevice(); // on page load
+    window.addEventListener("resize", detectDevice);
+
+    return () => window.removeEventListener("resize", detectDevice);
   }, []);
 
-  // Main Three.js and animation setup
   useLayoutEffect(() => {
+    const isMobilePortrait = deviceMode === "mobile-portrait";
+
     if (!containerRef.current || !canvasRef.current) return;
 
-    const isMobile = deviceMode === "mobile";
+    setIsLoaded(false);
+    let isActive = true;
 
-    // Clean up previous
-    ScrollTrigger.getAll().forEach((st) => st.kill());
-    if (rendererRef.current) {
-      rendererRef.current.dispose();
-      rendererRef.current = null;
-    }
-    canvasRef.current.innerHTML = "";
-    cancelAnimationFrame(animationIdRef.current);
-
-    // --- THREE.JS SETUP ---
-    const container = containerRef.current;
-    const rect = container.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
+    // --- SETUP SCENE ---
     const scene = new THREE.Scene();
+
+    const getContainerSize = () => {
+      const rect = containerRef.current!.getBoundingClientRect();
+      return {
+        width: rect.width,
+        height: rect.height,
+      };
+    };
+
+    const { width, height } = getContainerSize();
+
     const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 2000);
+
+    camera.position.set(0, 5, 80); // Offset camera slightly up to center the model view
+
+    if (!containerRef.current || !canvasRef.current) return;
+
+    // ⛔ prevent duplicate WebGL contexts
+    const existingCanvas = canvasRef.current.querySelector("canvas");
+    if (existingCanvas) existingCanvas.remove();
 
     const renderer = new THREE.WebGLRenderer({
       alpha: true,
@@ -82,19 +86,20 @@ export function CameraScrollSection() {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
+
+    /* 🔑 CRITICAL: force canvas to fill container */
     renderer.domElement.style.width = "100%";
     renderer.domElement.style.height = "100%";
     renderer.domElement.style.display = "block";
 
     canvasRef.current.appendChild(renderer.domElement);
-    rendererRef.current = renderer;
 
-    // Model group for transformations
     const modelGroup = new THREE.Group();
     scene.add(modelGroup);
 
-    // Lighting
-    scene.add(new THREE.AmbientLight(0xffffff, 1));
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+    scene.add(ambientLight);
 
     const dirLight = new THREE.DirectionalLight(0xffffff, 2.5);
     dirLight.position.set(5, 10, 5);
@@ -106,59 +111,112 @@ export function CameraScrollSection() {
 
     // Load Model
     const loader = new GLTFLoader();
+    let model: THREE.Group | null = null;
+    let cameraTl: gsap.core.Timeline | null = null;
+    let brandTl: gsap.core.Timeline | null = null;
+    const scrollTriggers: ScrollTrigger[] = [];
 
     loader.load(
       cameraModelUrl,
       (gltf) => {
-        const model = gltf.scene;
-
-        // Center the model
+        if (!isActive || !containerRef.current || !canvasRef.current) return;
+        model = gltf.scene;
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         model.position.sub(center);
 
-        modelGroup.add(model);
+        model.position.set(0, 0, 0);
         modelGroup.rotation.set(0.1, -0.3, 0);
 
-        if (isMobile) {
-          // MOBILE: Static centered camera
-          model.scale.set(200, 200, 200);
-          modelGroup.position.set(0, 0, 0);
-          camera.position.set(0, 3, 80);
-          camera.fov = 32;
+        if (isMobilePortrait) {
+          // STATIC PRODUCT SHOT (MOBILE FIX)
+          camera.fov = 30;
           camera.updateProjectionMatrix();
+
+          model.scale.set(175, 175, 175);
+          // center the model
+          modelGroup.position.set(0, 0, 0);
+          modelGroup.rotation.set(0, 0, 0);
+
+          // center camera vertically
+          camera.position.set(0, 2.5, 85);
         } else {
-          // DESKTOP: Camera on left, animated
+          // TABLET + DESKTOP (your original behavior)
           model.scale.set(250, 250, 250);
           modelGroup.position.set(-20, -5, 0);
           camera.position.set(0, 5, 80);
+        }
 
-          // Create desktop animation timeline
-          const tl = gsap.timeline({
+        modelGroup.add(model);
+        setIsLoaded(true);
+
+        gsap.set(renderer.domElement, { opacity: 1 });
+
+        if (!isMobilePortrait) {
+          cameraTl = gsap.timeline({
             scrollTrigger: {
-              trigger: container,
+              trigger: containerRef.current,
               start: "top top",
-              end: "+=400%",
+              end: "+=500%",
               scrub: 1.5,
               pin: true,
               pinSpacing: true,
               anticipatePin: 1,
             },
           });
+          if (cameraTl.scrollTrigger)
+            scrollTriggers.push(cameraTl.scrollTrigger);
 
-          // Timeline labels
+          cameraTl.addLabel("stage1", 0);
+          cameraTl.addLabel("stage2", 1.5);
+          cameraTl.addLabel("stage3", 3.5);
+          cameraTl.addLabel("stage4", 6);
 
-          tl.addLabel("stage1", 0);
-          tl.addLabel("stage2", 1.5);
-          tl.addLabel("stage3", 3.5);
-          tl.addLabel("end", 6);
+          // BRAND STORY ANIMATION
+          cameraTl.fromTo(
+            "#brand-panel",
+            { opacity: 0, y: 20, scale: 0.96 },
+            { opacity: 1, y: 0, scale: 1, duration: 1, ease: "power2.out" },
+            "stage1+=0.6",
+          );
 
-          // Camera 3D animation
-          tl.to(
-            model.scale,
-            { x: 220, y: 220, z: 220, duration: 2, ease: "power2.inOut" },
-            "stage1",
-          )
+          cameraTl.fromTo(
+            "#brand-1",
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 1 },
+            "stage1+=0.8",
+          );
+          cameraTl.to(
+            "#brand-1",
+            { opacity: 0, y: -20, duration: 0.8 },
+            "stage2",
+          );
+          cameraTl.fromTo(
+            "#brand-2",
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 1 },
+            "stage2+=0.2",
+          );
+          cameraTl.to(
+            "#brand-2",
+            { opacity: 0, y: -20, duration: 0.8 },
+            "stage3",
+          );
+          cameraTl.fromTo(
+            "#brand-3",
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 1 },
+            "stage3+=0.2",
+          );
+          cameraTl.to("#brand-panel", { opacity: 0, duration: 0.6 }, "stage4");
+
+          // 3D CAMERA ANIMATION - Keep camera centered and on the left side
+          cameraTl
+            .to(
+              model.scale,
+              { x: 220, y: 220, z: 220, duration: 2, ease: "power2.inOut" },
+              "stage1",
+            )
             .to(
               modelGroup.rotation,
               { y: Math.PI * 0.5, duration: 2, ease: "power2.inOut" },
@@ -170,21 +228,24 @@ export function CameraScrollSection() {
               "stage1",
             );
 
-          tl.to(
-            modelGroup.rotation,
-            { x: 0.3, y: Math.PI * 1.2, duration: 3, ease: "power1.inOut" },
-            "stage2",
-          ).to(
-            modelGroup.position,
-            { x: -18, y: -5, z: 0, duration: 3, ease: "power1.inOut" },
-            "stage2",
-          );
+          cameraTl
+            .to(
+              modelGroup.rotation,
+              { x: 0.3, y: Math.PI * 1.2, duration: 3, ease: "power1.inOut" },
+              "stage2",
+            )
+            .to(
+              modelGroup.position,
+              { x: -18, y: -5, z: 0, duration: 3, ease: "power1.inOut" },
+              "stage2",
+            );
 
-          tl.to(
-            model.scale,
-            { x: 350, y: 350, z: 350, duration: 2.5, ease: "power3.inOut" },
-            "stage3",
-          )
+          cameraTl
+            .to(
+              model.scale,
+              { x: 350, y: 350, z: 350, duration: 2.5, ease: "power3.inOut" },
+              "stage3",
+            )
             .to(
               modelGroup.position,
               { x: 0, y: -5, z: 30, duration: 2.5, ease: "power3.inOut" },
@@ -196,203 +257,244 @@ export function CameraScrollSection() {
               "stage3",
             );
 
-          tl.to(
-            modelGroup.position,
-            { z: -100, duration: 1, ease: "power3.in" },
-            "end",
-          ).to(renderer.domElement, { opacity: 0, duration: 1 }, "end");
+          cameraTl
+            .to(
+              modelGroup.position,
+              { z: -100, duration: 1, ease: "power3.in" },
+              "stage4",
+            )
+            .to(renderer.domElement, { opacity: 0, duration: 1 }, "stage4");
+        } else {
+          cameraTl = gsap.timeline({
+            defaults: { ease: "power2.inOut", duration: 1.2 },
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: "top top",
+              end: "+=240%",
+              scrub: 1,
+              pin: true,
+              pinSpacing: true,
+              anticipatePin: 1,
+            },
+          });
+          if (cameraTl.scrollTrigger)
+            scrollTriggers.push(cameraTl.scrollTrigger);
 
-          // Brand panel animations - run in PARALLEL with camera
-          tl.fromTo(
-            "#brand-panel",
-            { opacity: 0, y: 30 },
-            { opacity: 1, y: 0, duration: 1, ease: "power2.out" },
-            "stage1+=0.5",
-          );
+          const mobileSection = mobilePinRef.current;
+          if (mobileSection) gsap.set(mobileSection, { opacity: 0, y: 60 });
 
-          // Brand 1: visible during stage1, fade out before stage2
-          tl.fromTo(
-            "#brand-1",
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.8 },
-            "stage1+=0.6",
-          ).to(
-            "#brand-1",
-            { opacity: 0, y: -20, duration: 0.6 },
-            "stage2-=0.3",
-          );
+          cameraTl.addLabel("intro", 0);
+          cameraTl.addLabel("detail", 1.25);
+          cameraTl.addLabel("macro", 2.55);
 
-          // Brand 2: visible during stage2, fade out before stage3
-          tl.fromTo(
-            "#brand-2",
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.8 },
-            "stage2+=0.2",
-          ).to(
-            "#brand-2",
-            { opacity: 0, y: -20, duration: 0.6 },
-            "stage3-=0.3",
-          );
+          // INTRO: reveal the body with subtle tilt and parallax
+          cameraTl
+            .to(model.scale, { x: 215, y: 215, z: 215 }, "intro")
+            .to(
+              modelGroup.rotation,
+              { x: 0.05, y: Math.PI * 0.18, z: 0 },
+              "intro",
+            )
+            .to(modelGroup.position, { x: -6, y: -1.2, z: 6 }, "intro")
+            .to(camera.position, { x: -2.5, y: 3.2, z: 78 }, "intro")
+            .to(dirLight, { intensity: 2.2 }, "intro")
+            .to(backLight, { intensity: 18 }, "intro");
 
-          // Brand 3: visible during stage3, fade out at end
-          tl.fromTo(
-            "#brand-3",
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.8 },
-            "stage3+=0.2",
-          ).to("#brand-panel", { opacity: 0, duration: 0.8 }, "end");
+          // DETAIL: slide across the dials with a warm exposure push
+          cameraTl
+            .to(model.scale, { x: 240, y: 240, z: 240 }, "detail")
+            .to(
+              modelGroup.rotation,
+              { x: 0.12, y: Math.PI * 0.55, z: -0.03 },
+              "detail",
+            )
+            .to(modelGroup.position, { x: 5, y: -2.8, z: 14 }, "detail")
+            .to(camera.position, { x: 4, y: 4.6, z: 67 }, "detail")
+            .to(renderer, { toneMappingExposure: 1.35 }, "detail")
+            .to(dirLight, { intensity: 3.1 }, "detail")
+            .to(backLight, { intensity: 14 }, "detail");
+
+          // MACRO: push into the lens, then transition into the brand stories
+          cameraTl
+            .to(model.scale, { x: 285, y: 285, z: 285 }, "macro")
+            .to(
+              modelGroup.rotation,
+              { x: -0.02, y: Math.PI * 0.95, z: 0.02 },
+              "macro",
+            )
+            .to(modelGroup.position, { x: 0, y: -3.6, z: 28 }, "macro")
+            .to(camera.position, { x: 0, y: 5.5, z: 56 }, "macro")
+            .to(renderer, { toneMappingExposure: 1.18 }, "macro")
+            .to(dirLight, { intensity: 2.4 }, "macro")
+            .to(backLight, { intensity: 20 }, "macro")
+            .to(
+              renderer.domElement,
+              { opacity: 0, duration: 1.5, ease: "power3.inOut" },
+              "macro+=0.35",
+            );
+
+          if (mobileSection)
+            cameraTl.to(
+              mobileSection,
+              { opacity: 1, y: 0, duration: 1, ease: "power3.out" },
+              "macro+=0.15",
+            );
+
+          // Mobile brand animation is its own pinned section
+          const q = gsap.utils.selector(mobilePinRef);
+          if (mobilePinRef.current) {
+            const items = q(
+              ".mobile-brand-1, .mobile-brand-2, .mobile-brand-3",
+            );
+            gsap.set(items, { opacity: 0, y: 40 });
+            gsap.set(q(".mobile-brand-1"), { opacity: 1, y: 0 });
+
+            brandTl = gsap
+              .timeline({
+                scrollTrigger: {
+                  trigger: mobilePinRef.current,
+                  start: "top top",
+                  end: "+=220%",
+                  scrub: true,
+                  pin: mobilePinRef.current,
+                  pinSpacing: true,
+                  anticipatePin: 1,
+                },
+              })
+              .to(q(".mobile-brand-1"), { opacity: 0, y: -40 })
+              .to(q(".mobile-brand-2"), { opacity: 1, y: 0 })
+              .to(q(".mobile-brand-2"), { opacity: 0, y: -40 })
+              .to(q(".mobile-brand-3"), { opacity: 1, y: 0 });
+
+            if (brandTl.scrollTrigger)
+              scrollTriggers.push(brandTl.scrollTrigger);
+          }
         }
 
-        setIsLoaded(true);
-        gsap.set(renderer.domElement, { opacity: 1 });
-        ScrollTrigger.refresh();
+        ScrollTrigger.refresh(true);
       },
       undefined,
-      (err) => console.error("Error loading camera model:", err),
+      (err) => console.error("Error loading model:", err),
     );
 
-    // Animation loop
+    const handleResize = () => {
+      if (!containerRef.current) return;
+
+      const { width, height } = getContainerSize();
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+
+      ScrollTrigger.refresh();
+    };
+    window.addEventListener("resize", handleResize);
+
+    let reqId: number;
     const animate = () => {
-      animationIdRef.current = requestAnimationFrame(animate);
+      reqId = requestAnimationFrame(animate);
       renderer.render(scene, camera);
     };
     animate();
 
-    // Handle resize
-    let resizeTimeout: ReturnType<typeof setTimeout>;
-    const handleResize = () => {
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      camera.aspect = rect.width / rect.height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(rect.width, rect.height);
-
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => ScrollTrigger.refresh(), 200);
-    };
-    window.addEventListener("resize", handleResize);
-
-    // Cleanup
     return () => {
-      cancelAnimationFrame(animationIdRef.current);
-      clearTimeout(resizeTimeout);
-      window.removeEventListener("resize", handleResize);
-      ScrollTrigger.getAll().forEach((st) => st.kill());
+      isActive = false;
+      cancelAnimationFrame(reqId);
+
+      scrollTriggers.forEach((st) => st.kill());
+      cameraTl?.kill();
+      brandTl?.kill();
       renderer.dispose();
-      canvasRef.current?.replaceChildren();
+      renderer.forceContextLoss();
+      const currentCanvas = renderer.domElement;
+      if (canvasRef.current?.contains(currentCanvas)) {
+        canvasRef.current.removeChild(currentCanvas);
+      }
     };
   }, [deviceMode]);
 
-  // Mobile brand card animations - separate effect
-  useEffect(() => {
-    if (deviceMode !== "mobile") return;
-
-    const timeout = setTimeout(() => {
-      const cards = gsap.utils.toArray<HTMLElement>(".mobile-brand-card");
-
-      cards.forEach((card, index) => {
-        gsap.fromTo(
-          card,
-          { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-            delay: index * 0.1,
-            scrollTrigger: {
-              trigger: card,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
-            },
-          },
-        );
-      });
-
-      ScrollTrigger.refresh();
-    }, 150);
-
-    return () => clearTimeout(timeout);
-  }, [deviceMode, isLoaded]);
-
   return (
     <>
-      {/* Camera Section */}
       <div
         ref={containerRef}
         className="relative w-full overflow-hidden"
         style={{
-          height: deviceMode === "mobile" ? "60vh" : "100vh",
+          height: deviceMode === "mobile-portrait" ? "100svh" : "100vh",
           backgroundColor: "#F5E6D3",
         }}
       >
-        {/* Three.js Canvas */}
         <div
           ref={canvasRef}
           className="absolute inset-0 z-20"
           style={{ width: "100%", height: "100%" }}
         />
 
-        {/* Desktop Brand Panel */}
-        {deviceMode === "desktop" && (
+        {deviceMode !== "mobile-portrait" && (
           <div className="absolute inset-0 z-10 pointer-events-none flex items-center">
             <div className="relative max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24 w-full h-full flex items-center">
               <div
                 id="brand-panel"
                 className="absolute right-8 md:right-16 lg:right-24 top-1/2 -translate-y-1/2 w-[500px] text-right opacity-0"
               >
-                <div className="relative min-h-[450px] flex flex-col justify-center">
+                <div className="relative min-h-[500px] flex flex-col justify-center">
                   {/* Brand 1 */}
                   <div
                     id="brand-1"
+                    data-alt="brand-1"
                     className="absolute inset-0 flex flex-col items-end justify-center text-right"
                   >
                     <img
                       src={brand1}
-                      alt=""
-                      className="w-80 h-auto mb-6 rounded-2xl shadow-xl"
+                      alt="Podcast studio brand identity representing a professional creator studio"
+                      className="w-96 h-auto mb-8 rounded-2xl shadow-xl"
                     />
-                    <h2 className="text-5xl font-light tracking-tight text-[#0A1628]">
-                      Crafted for Creators
-                    </h2>
-                    <p className="mt-3 text-xl text-[#0A1628]/60 max-w-md ml-auto">
-                      A studio-grade camera experience.
-                    </p>
+                    <div className="space-y-4">
+                      <h2 className="text-[3.25rem] font-light tracking-tight leading-tight text-[#0A1628]">
+                        Crafted for Creators
+                      </h2>
+                      <p className="mt-2 text-xl text-[#0A1628]/65 max-w-md ml-auto">
+                        A studio-grade camera experience.
+                      </p>
+                    </div>
                   </div>
-
                   {/* Brand 2 */}
                   <div
                     id="brand-2"
+                    data-alt="brand-2"
                     className="absolute inset-0 flex flex-col items-end justify-center text-right opacity-0"
                   >
                     <img
                       src={brand2}
-                      alt=""
-                      className="w-80 h-auto mb-6 rounded-2xl shadow-xl"
+                      alt="Creative podcast studio brand identity designed for content creators"
+                      className="w-96 h-auto mb-8 rounded-2xl shadow-xl"
                     />
-                    <h2 className="text-5xl font-light tracking-tight text-[#0A1628]">
-                      Precision Engineering
-                    </h2>
-                    <p className="mt-3 text-xl text-[#0A1628]/60 max-w-md ml-auto">
-                      Designed to capture every detail.
-                    </p>
+                    <div className="space-y-4">
+                      <h2 className="text-[3.25rem] font-light tracking-tight leading-tight text-[#0A1628]">
+                        Precision Engineering
+                      </h2>
+                      <p className="mt-2 text-xl text-[#0A1628]/65 max-w-md ml-auto">
+                        Designed to capture every detail.
+                      </p>
+                    </div>
                   </div>
-
                   {/* Brand 3 */}
                   <div
                     id="brand-3"
+                    data-alt="brand-3"
                     className="absolute inset-0 flex flex-col items-end justify-center text-right opacity-0"
                   >
                     <img
                       src={brand3}
-                      alt=""
-                      className="w-80 h-auto mb-6 rounded-2xl shadow-xl"
+                      alt="Modern podcast studio visual branding for professional creators"
+                      className="w-96 h-auto mb-8 rounded-2xl shadow-xl"
                     />
-                    <h2 className="text-5xl font-light tracking-tight text-[#0A1628]">
-                      Built to Inspire
-                    </h2>
-                    <p className="mt-3 text-xl text-[#0A1628]/60 max-w-md ml-auto">
-                      Where creativity meets performance.
-                    </p>
+                    <div className="space-y-4">
+                      <h2 className="text-[3.25rem] font-light tracking-tight leading-tight text-[#0A1628]">
+                        Built to Inspire
+                      </h2>
+                      <p className="mt-2 text-xl text-[#0A1628]/65 max-w-md ml-auto">
+                        Where creativity meets performance.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -400,67 +502,68 @@ export function CameraScrollSection() {
           </div>
         )}
 
-        {/* Loading State */}
         {!isLoaded && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#0A1628] text-white">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Loading Camera Experience</span>
-            </div>
+            Loading Camera Experience
           </div>
         )}
       </div>
 
-      {/* Mobile Brand Cards */}
-      {deviceMode === "mobile" && (
-        <section className="w-full py-12 bg-[#F5E6D3]">
-          <div className="max-w-md mx-auto px-6 space-y-12">
-            {/* Brand 1 */}
-            <div className="mobile-brand-card flex flex-col items-center text-center">
-              <img
-                src={brand1}
-                className="w-full max-w-[280px] mb-5 rounded-xl shadow-lg"
-                alt="Crafted for Creators"
-              />
-              <h2 className="text-2xl font-light text-[#0A1628]">
-                Crafted for Creators
-              </h2>
-              <p className="mt-2 text-base text-[#0A1628]/60">
-                A studio-grade camera experience.
-              </p>
-            </div>
+      {deviceMode === "mobile-portrait" && (
+        <div>
+          <section
+            ref={mobilePinRef}
+            className="mobile-brand-section relative w-full h-screen bg-[#F5E6D3] overflow-hidden"
+            style={{ height: "100svh" }}
+          >
+            <div className="relative z-40 h-screen max-w-[600px] mx-auto px-4 flex items-center justify-center">
+              {/* Brand 1 */}
+              <div className="mobile-brand-1 absolute inset-0 flex flex-col items-center justify-center text-center opacity-0">
+                <img
+                  src={brand1}
+                  className="w-full max-w-xs mb-6 rounded-xl shadow-lg"
+                  alt="Professional podcast studio branding representing a creator-focused recording space"
+                />
+                <h2 className="text-3xl font-light text-[#0A1628]">
+                  Crafted for Creators
+                </h2>
+                <p className="mt-3 text-lg text-[#0A1628]/65">
+                  A studio-grade camera experience.
+                </p>
+              </div>
 
-            {/* Brand 2 */}
-            <div className="mobile-brand-card flex flex-col items-center text-center">
-              <img
-                src={brand2}
-                className="w-full max-w-[280px] mb-5 rounded-xl shadow-lg"
-                alt="Precision Engineering"
-              />
-              <h2 className="text-2xl font-light text-[#0A1628]">
-                Precision Engineering
-              </h2>
-              <p className="mt-2 text-base text-[#0A1628]/60">
-                Designed to capture every detail.
-              </p>
-            </div>
+              {/* Brand 2 */}
+              <div className="mobile-brand-2 absolute inset-0 flex flex-col items-center justify-center text-center opacity-0">
+                <img
+                  src={brand2}
+                  className="w-full max-w-xs mb-6 rounded-xl shadow-lg"
+                  alt="Creative podcast studio brand identity designed for content creators"
+                />
+                <h2 className="text-3xl font-light text-[#0A1628]">
+                  Precision Engineering
+                </h2>
+                <p className="mt-3 text-lg text-[#0A1628]/65">
+                  Designed to capture every detail.
+                </p>
+              </div>
 
-            {/* Brand 3 */}
-            <div className="mobile-brand-card flex flex-col items-center text-center">
-              <img
-                src={brand3}
-                className="w-full max-w-[280px] mb-5 rounded-xl shadow-lg"
-                alt="Built to Inspire"
-              />
-              <h2 className="text-2xl font-light text-[#0A1628]">
-                Built to Inspire
-              </h2>
-              <p className="mt-2 text-base text-[#0A1628]/60">
-                Where creativity meets performance.
-              </p>
+              {/* Brand 3 */}
+              <div className="mobile-brand-3 absolute inset-0 flex flex-col items-center justify-center text-center opacity-0">
+                <img
+                  src={brand3}
+                  className="w-full max-w-xs mb-6 rounded-xl shadow-lg"
+                  alt="Modern podcast studio visual branding for professional creators"
+                />
+                <h2 className="text-3xl font-light text-[#0A1628]">
+                  Built to Inspire
+                </h2>
+                <p className="mt-3 text-lg text-[#0A1628]/65">
+                  Where creativity meets performance.
+                </p>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       )}
     </>
   );

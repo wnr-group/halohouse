@@ -12,6 +12,15 @@ export function Navigation() {
   const contactRef = useRef<HTMLAnchorElement | null>(null);
   const location = useLocation();
 
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  });
+};
+
+ 
+
   useEffect(() => {
     if (!contactRef.current) return;
 
@@ -57,6 +66,7 @@ export function Navigation() {
         {/* Logo */}
         <Link
           to="/"
+          onClick={scrollToTop}
           className="text-xl tracking-widest uppercase font-light transition-colors"
           style={{ color: theme.textPrimary }}
           onMouseEnter={(e) => (e.currentTarget.style.color = theme.accent)}
@@ -81,11 +91,13 @@ export function Navigation() {
               key={item.id}
               ref={item.id === "/contact" ? contactRef : null}
               to={item.id}
+              onClick={scrollToTop}
               className="text-sm tracking-wider uppercase transition-colors relative"
               style={{
                 color: isActive(item.id) ? theme.accent : theme.textSecondary
               }}
             >
+
               {item.label}
               {isActive(item.id) && (
                 <motion.div
@@ -102,6 +114,7 @@ export function Navigation() {
         {/* CTA Button */}
         <Link
           to="/book-session"
+          onClick={scrollToTop}
           className="hidden md:block px-6 py-2.5 text-sm tracking-widest uppercase transition-all font-medium"
           style={{
             backgroundColor: theme.accent,
@@ -120,12 +133,16 @@ export function Navigation() {
               <Link
                 key={item.id}
                 to={item.id}
-                onClick={() => setMenuOpen(false)}
+                onClick={() => {
+                  scrollToTop();
+                  setMenuOpen(false);
+                }}
                 className="text-sm uppercase tracking-wider"
                 style={{
                   color: isActive(item.id) ? theme.accent : theme.textSecondary
                 }}
               >
+
                 {item.label}
               </Link>
             ))}

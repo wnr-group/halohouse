@@ -1,29 +1,57 @@
-import { motion } from 'motion/react';
-import { Play } from 'lucide-react';
+import React, { useRef } from "react";
+import { motion } from "motion/react";
+import { Play } from "lucide-react";
+import { SEO } from "../components/SEO";
+import { Volume2, VolumeX } from "lucide-react";
+
+import CarRace from "../assets/Portfolio/car-race-project-out.mov";
+import KeralaAi from "../assets/Portfolio/Kerala-Ai created video.mp4";
+import NeuroOut from "../assets/Portfolio/Neuro-out.mp4";
+import Valentine from "../assets/Portfolio/Feb 5 - valentine_.mp4";
+import DenimJacket from "../assets/Portfolio/Denim-Jacket.mp4";
+import HarryPotter from "../assets/Portfolio/Harry-potter.mp4";
+import Comfort from "../assets/Portfolio/Comfort.mp4";
+import KeralaShake from "../assets/Portfolio/kerala-shake.mp4";
+import Upsc from "../assets/Portfolio/Upsc.mp4";
 
 export function PortfolioPage() {
+  // Detect mobile (no hover devices)
+  const isMobile =
+    typeof window !== "undefined" && window.matchMedia("(hover: none)").matches;
+
+  // Track currently playing video
+  const activeVideoRef = useRef<HTMLVideoElement | null>(null);
+
   const portfolioItems = [
-    { id: 1, title: 'Podcast Session', category: 'Studio' },
-    { id: 2, title: 'Interview Setup', category: 'Studio' },
-    { id: 3, title: 'Social Media Reel', category: 'Reels' },
-    { id: 4, title: 'Brand Commercial', category: 'Commercials' },
-    { id: 5, title: 'Product Video', category: 'Shoots' },
-    { id: 6, title: 'Live Session', category: 'Studio' },
-    { id: 7, title: 'Instagram Reel', category: 'Reels' },
-    { id: 8, title: 'Advertisement', category: 'Commercials' },
-    { id: 9, title: 'Model Photoshoot', category: 'Shoots' },
-    { id: 10, title: 'Documentary Style', category: 'Studio' }
+    { id: 1, title: "Car Race", category: "Commercial", video: CarRace },
+    { id: 2, title: "Kerala AI", category: "Reels", video: KeralaAi },
+    { id: 3, title: "Neuro", category: "Studio", video: NeuroOut },
+    { id: 4, title: "Valentine", category: "Reels", video: Valentine },
+    {
+      id: 5,
+      title: "Denim Jacket",
+      category: "Commercial",
+      video: DenimJacket,
+    },
+    { id: 6, title: "Harry Potter", category: "Reels", video: HarryPotter },
+    { id: 7, title: "Comfort", category: "Commercial", video: Comfort },
+    { id: 8, title: "Kerala Shake", category: "Reels", video: KeralaShake },
+    { id: 9, title: "Upsc", category: "Commercial", video: Upsc },
   ];
 
   return (
-    <div className="min-h-screen pt-32 pb-20">
+    <div className="min-h-screen bg-background pt-32 pb-20">
+      <SEO
+        title="Our Portfolio | Featured Creative Work | Halo House"
+        description="Explore the premium podcasts and videos created at Halo House."
+      />
 
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24">
-        {/* Page Header */}
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8 }}
           className="mb-20"
         >
           <h1 className="text-6xl md:text-7xl lg:text-8xl font-light text-foreground">
@@ -34,48 +62,121 @@ export function PortfolioPage() {
           </p>
         </motion.div>
 
-        {/* Portfolio Grid */}
+        {/* Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
-          {portfolioItems.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
-              whileHover={{ scale: 1.05 }}
-              className="group relative aspect-[9/16] bg-white rounded-lg border border-border"
+          {portfolioItems.map((item) => {
+            const videoRef = useRef<HTMLVideoElement | null>(null);
+            const [isAudioOn, setIsAudioOn] = React.useState(false);
+            const [isPlaying, setIsPlaying] = React.useState(false);
+            // Hover play (desktop preview)
+            const handleHoverPlay = () => {
+              if (!videoRef.current || isMobile) return;
 
-            >
-              {/* Video Thumbnail Placeholder */}
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background/90"></div>
+              if (
+                activeVideoRef.current &&
+                activeVideoRef.current !== videoRef.current
+              ) {
+                activeVideoRef.current.pause();
+                activeVideoRef.current.currentTime = 0;
+              }
 
+              videoRef.current.muted = true;
+              videoRef.current.play();
+              setIsPlaying(true);
+              activeVideoRef.current = videoRef.current;
+            };
 
-              {/* Category Badge */}
-              <div className="absolute top-4 left-4 px-3 py-1 bg-primary/15 border border-primary/30 rounded-full">
-                <p className="text-[10px] tracking-widest uppercase text-primary">
-                  {item.category}
-                </p>
-              </div>
+            // Hover leave
+            const handleHoverLeave = () => {
+              if (!videoRef.current || isMobile) return;
+              videoRef.current.pause();
+              videoRef.current.currentTime = 0;
+              setIsPlaying(false);
+            };
 
-              {/* Play Icon Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
-                <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
-                  <Play className="w-8 h-8 text-primary-foreground ml-1" />
+            // Click / Tap play with sound
+            const handleClickPlay = () => {
+              if (!videoRef.current) return;
 
+              const video = videoRef.current;
+
+              if (activeVideoRef.current && activeVideoRef.current !== video) {
+                activeVideoRef.current.pause();
+                activeVideoRef.current.currentTime = 0;
+              }
+
+              if (video.paused) {
+                video.muted = false;
+                video.play();
+                setIsAudioOn(true);
+                setIsPlaying(true);
+                activeVideoRef.current = video;
+              } else {
+                video.pause();
+                setIsPlaying(false);
+              }
+            };
+
+            return (
+              <motion.div
+                key={item.id}
+                className="group relative aspect-[9/16] bg-white rounded-lg border border-border overflow-hidden"
+                whileHover={!isMobile ? { scale: 1.05 } : undefined}
+                onMouseEnter={handleHoverPlay}
+                onMouseLeave={handleHoverLeave}
+                onClick={handleClickPlay}
+              >
+                {/* Video */}
+                <video
+                  ref={videoRef}
+                  src={item.video}
+                  loop
+                  playsInline
+                  preload="metadata"
+                  muted
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+
+                {/* Category Badge */}
+                <div className="absolute top-4 left-4 px-3 py-1 bg-primary/15 border border-primary/30 rounded-full z-10">
+                  <p className="text-[10px] tracking-widest uppercase text-primary">
+                    {item.category}
+                  </p>
                 </div>
-              </div>
 
-              {/* Title */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background/80 to-transparent">
+                <div className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
+                  {isAudioOn ? (
+                    <Volume2 className="w-4 h-4 text-white" />
+                  ) : (
+                    <>
+                      <VolumeX className="w-4 h-4 text-white" />
+                      <span className="text-[10px] text-white hidden md:block">
+                        Click for sound
+                      </span>
+                    </>
+                  )}
+                </div>
 
-                <p className="text-xs tracking-wider uppercase text-foreground/90">
+                {/* Play Icon */}
+                <div
+                  className={`absolute inset-0 flex items-center justify-center transition-opacity ${
+                    isPlaying ? "opacity-0" : "opacity-80"
+                  }`}
+                >
+                  <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+                    <Play className="w-8 h-8 text-primary-foreground ml-1" />
+                  </div>
+                </div>
 
-                  {item.title}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+                {/* Title */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+                  <p className="text-xs tracking-wider uppercase text-white">
+                    {item.title}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </div>
