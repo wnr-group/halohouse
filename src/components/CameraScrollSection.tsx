@@ -49,7 +49,7 @@ export function CameraScrollSection() {
   }, []);
 
   useLayoutEffect(() => {
-    const enableCameraAnimation = deviceMode !== "mobile-portrait";
+    const enableCameraAnimation = true;
 
     const enableMobileBrandAnimation = deviceMode === "mobile-portrait";
 
@@ -153,7 +153,7 @@ export function CameraScrollSection() {
           modelGroup.position.set(0, 0, 0);
 
           // center camera vertically
-          camera.position.set(0, 4.5, 95);
+          camera.position.set(0, 3.2, 85);
         } else {
           // TABLET + DESKTOP (your original behavior)
           model.scale.set(250, 250, 250);
@@ -178,9 +178,9 @@ export function CameraScrollSection() {
             scrollTrigger: {
               trigger: containerRef.current,
               start: "top top",
-              end: "+=500%",
+              end: isMobilePortrait ? "+=150%" : "+=500%",
               scrub: 1.5,
-              pin: !isMobilePortrait,
+              pin: true,
               pinSpacing: true,
               anticipatePin: 1,
             }
@@ -206,7 +206,35 @@ export function CameraScrollSection() {
           tl.to("#brand-panel", { opacity: 0, duration: 0.6 }, "stage4");
 
           // 3D CAMERA ANIMATION - Keep camera centered and on the left side
-          if (!isMobilePortrait) {
+          if (isMobilePortrait) {
+            tl.to(model.scale,
+              { x: 240, y: 240, z: 240, duration: 2, ease: "power2.inOut" },
+              "stage1"
+            )
+              .to(modelGroup.rotation,
+                { y: Math.PI * 0.7, duration: 2, ease: "power2.inOut" },
+                "stage1"
+              )
+              .to(modelGroup.position,
+                { x: 0, y: -3, z: 10, duration: 2, ease: "power2.inOut" },
+                "stage1"
+              );
+
+            tl.to(modelGroup.rotation,
+              { x: 0.2, y: Math.PI * 1.1, duration: 3, ease: "power1.inOut" },
+              "stage2"
+            );
+
+            tl.to(model.scale,
+              { x: 380, y: 380, z: 380, duration: 2.5, ease: "power3.inOut" },
+              "stage3"
+            )
+              .to(modelGroup.position,
+                { x: 0, y: -4, z: 20, duration: 2.5, ease: "power3.inOut" },
+                "stage3"
+              );
+
+          } else {
             tl.to(model.scale, { x: 220, y: 220, z: 220, duration: 2, ease: "power2.inOut" }, "stage1")
               .to(modelGroup.rotation, { y: Math.PI * 0.5, duration: 2, ease: "power2.inOut" }, "stage1")
               .to(modelGroup.position, { x: -20, y: -5, z: 0, duration: 2, ease: "power2.inOut" }, "stage1");
@@ -255,38 +283,33 @@ export function CameraScrollSection() {
     };
     animate();
 
+    if (isMobilePortrait) {
 
-    if (deviceMode === "mobile-portrait") {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          gsap.set(
-            [".mobile-brand-1", ".mobile-brand-2", ".mobile-brand-3"],
-            { opacity: 0, y: 40 }
-          );
+  gsap.set(
+    [".mobile-brand-1", ".mobile-brand-2", ".mobile-brand-3"],
+    { opacity: 0, y: 40 }
+  );
 
-          gsap.set(".mobile-brand-1", { opacity: 1, y: 0 });
+  gsap.set(".mobile-brand-1", { opacity: 1, y: 0 });
 
-          mobileTlRef.current = gsap.timeline({
-            scrollTrigger: {
-              trigger: ".mobile-brand-section",
-              start: "top top",
-              end: "+=300%",
-              scrub: true,
-              pin: true,
-              pinSpacing: true,
-              anticipatePin: 1,
-            },
-          })
-            .to(".mobile-brand-1", { opacity: 0, y: -40 })
-            .to(".mobile-brand-2", { opacity: 1, y: 0 })
-            .to(".mobile-brand-2", { opacity: 0, y: -40 })
-            .to(".mobile-brand-3", { opacity: 1, y: 0 });
-
-          ScrollTrigger.refresh(true);
-          window.scrollTo(0, 0);
-        });
-      });
+  mobileTlRef.current = gsap.timeline({
+    scrollTrigger: {
+      trigger: ".mobile-brand-section",
+      start: "top top",
+      end: "+=120%",
+      scrub: true,
+      pin: true,
+      pinSpacing: true,
+      anticipatePin: 1,
     }
+  })
+  .to(".mobile-brand-1", { opacity: 0, y: -40 ,duration:1})
+  .to(".mobile-brand-2", { opacity: 1, y: 0,duration:1})
+  .to(".mobile-brand-2", { opacity: 0, y: -40 ,duration:1})
+  .to(".mobile-brand-3", { opacity: 1, y: 0,duration:1})
+  .to(".mobile-brand-3", { opacity: 0, y: -40 ,duration:1});
+}
+
 
     return () => {
 
