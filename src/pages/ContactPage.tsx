@@ -1,5 +1,13 @@
 import { motion } from "motion/react";
-import { Mail, Phone, MapPin, Instagram, Youtube, Twitter, MessageCircle } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Instagram,
+  Youtube,
+  Twitter,
+  MessageCircle,
+} from "lucide-react";
 import { SEO } from "../components/SEO";
 
 import { useState } from "react";
@@ -33,7 +41,7 @@ export function ContactPage() {
   /* ---------------- INPUT CHANGE ---------------- */
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -45,10 +53,7 @@ export function ContactPage() {
 
       if (normalized.length > 0 && normalized.length < 10) {
         setPhoneError("Phone number must be 10 digits");
-      } else if (
-        normalized.length === 10 &&
-        !/^[6-9]/.test(normalized)
-      ) {
+      } else if (normalized.length === 10 && !/^[6-9]/.test(normalized)) {
         setPhoneError("Phone number must start with 6–9");
       } else {
         setPhoneError("");
@@ -85,10 +90,7 @@ export function ContactPage() {
     }
 
     // Phone validation (final guard)
-    if (
-      normalizedPhone.length !== 10 ||
-      !/^[6-9]/.test(normalizedPhone)
-    ) {
+    if (normalizedPhone.length !== 10 || !/^[6-9]/.test(normalizedPhone)) {
       setError("Please enter a valid 10-digit phone number");
       return;
     }
@@ -101,16 +103,14 @@ export function ContactPage() {
 
     setLoading(true);
 
-    const { error } = await supabase
-      .from("contact_messages")
-      .insert([
-        {
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          phone: normalizedPhone,
-          message: formData.message,
-        },
-      ]);
+    const { error } = await supabase.from("contact_messages").insert([
+      {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: normalizedPhone,
+        message: formData.message,
+      },
+    ]);
 
     if (error) {
       console.error(error);
@@ -126,14 +126,13 @@ export function ContactPage() {
   /* ---------------- UI ---------------- */
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-32 pb-20">
+    <div className="min-h-screen bg-background text-foreground pb-20">
       <SEO
         title="Contact Us | Get in Touch | Halo House Podcast Studio"
         description="Have questions or want to tour the studio? Contact the Halo House team today for bookings and inquiries."
       />
       <section className="py-32 px-8 md:px-16 lg:px-24">
         <div className="max-w-[1400px] mx-auto">
-
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -144,28 +143,63 @@ export function ContactPage() {
           </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-
             {/* INFO */}
             <div className="space-y-8">
-              <ContactItem icon={Phone} label="Call Now" value="+91 8754706742" href="tel:+918754706742" />
-              <ContactItem icon={MessageCircle} label="WhatsApp" value="Available" href="https://wa.me/917010017080" />
-              <ContactItem icon={Mail} label="Email" value="halohousechennai@gmail.com" />
-              <ContactItem icon={MapPin} label="Location" value="Philomina nagar Thanjavur, Sholingnallur Chennai." />
+              <ContactItem
+                icon={Phone}
+                label="Call Now"
+                value="+91 8754706742"
+                href="tel:+918754706742"
+              />
+              <ContactItem
+                icon={MessageCircle}
+                label="WhatsApp"
+                value="Available"
+                href="https://wa.me/917010017080"
+              />
+              <ContactItem
+                icon={Mail}
+                label="Email"
+                value="halohousechennai@gmail.com"
+              />
+              <ContactItem
+                icon={MapPin}
+                label="Location"
+                value="Philomina nagar Thanjavur, Sholingnallur Chennai."
+              />
             </div>
 
             {/* FORM */}
             <div className="border p-10">
               <form onSubmit={handleSubmit} className="space-y-6">
-                <Field label="Name *" name="name" value={formData.name} onChange={handleChange} />
-                <Field label="Email *" name="email" type="email" value={formData.email} onChange={handleChange} />
-                <Field label="Phone *" name="phone" value={formData.phone} onChange={handleChange} />
+                <Field
+                  label="Name *"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                />
+                <Field
+                  label="Email *"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+                <Field
+                  label="Phone *"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                />
 
                 {phoneError && (
                   <p className="text-red-600 text-sm">{phoneError}</p>
                 )}
 
                 <div>
-                  <label className="block text-sm uppercase mb-2">Message *</label>
+                  <label className="block text-sm uppercase mb-2">
+                    Message *
+                  </label>
                   <ReactQuill
                     theme="snow"
                     value={formData.message}
@@ -187,7 +221,6 @@ export function ContactPage() {
                 {error && <p className="text-red-600">{error}</p>}
               </form>
             </div>
-
           </div>
         </div>
       </section>
