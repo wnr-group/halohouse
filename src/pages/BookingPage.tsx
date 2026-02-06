@@ -1,5 +1,4 @@
 import { motion } from "motion/react";
-import { Pricing } from "../components/Pricing";
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import ReactQuill from "react-quill";
@@ -62,8 +61,8 @@ export function BookingPage() {
         title="Book Your Session | Podcast Studio Booking | Halo House"
         description="Schedule your podcast or video recording session at Halo House. Choose from our flexible session passes and setup options."
       />
-      {/* Pricing */}
-      <Pricing />
+    
+      
 
       {/* Appointment Booking */}
       <section className="py-32 px-8 md:px-16 lg:px-24">
