@@ -53,13 +53,14 @@ export function BrandSlider() {
             {duplicatedBrands.map((brand, index) => (
               <div
                 key={`${brand.name}-${index}`}
-                className="flex-shrink-0 flex items-center justify-center"
+                className="flex-shrink-0 flex items-center justify-center "
                 style={{
                   width: '200px',
                   height: '120px',
                 }}
               >
-               <div className="w-full h-full flex items-center justify-center bg-white border border-[#0A1628]/15 rounded-lg  hover:border-[#0A1628]/30 transition-colors">
+              <div className="w-full h-full flex items-center justify-center">
+
 
                   {brand.logo ? (
                     <img
