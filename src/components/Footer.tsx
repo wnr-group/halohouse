@@ -104,25 +104,37 @@ export function Footer() {
             </div>
 
             {/* Social */}
-            <div>
-              <h4 className="text-xs tracking-widest uppercase text-[#F5E6D3]/60 mb-4">
-                Follow
-              </h4>
+          {/* Social */}
+<div>
+  <h4 className="text-xs tracking-widest uppercase text-[#F5E6D3]/60 mb-4">
+    Follow
+  </h4>
 
-              <div className="space-y-2">
-                {['Instagram', 'Twitter', 'YouTube'].map((social, index) => (
-                  <div key={index}>
-                    <a
-                      href="#"
-                      onClick={scrollToTop}
-                      className="text-[#F5E6D3]/80 hover:text-[#FDB913] transition-colors font-light"
-                    >
-                      {social}
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
+  <div className="space-y-2">
+    <div>
+      <a
+        href="https://www.instagram.com/halohouse._/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-[#F5E6D3]/80 hover:text-[#FDB913] transition-colors font-light"
+      >
+        Instagram
+      </a>
+    </div>
+
+    <div>
+      <a
+        href="https://www.instagram.com/halohouse._/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-[#F5E6D3]/80 hover:text-[#FDB913] transition-colors font-light"
+      >
+        YouTube
+      </a>
+    </div>
+  </div>
+</div>
+
 
           </div>
         </div>
