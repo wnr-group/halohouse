@@ -9,6 +9,8 @@ import { SEO } from "../components/SEO";
 
 
 export function BookingPage() {
+  const SHOW_BOOKING_PAGE = false;
+
 
   const [formData, setFormData] = useState({
     name: "",

@@ -54,14 +54,17 @@ const JobForm = ({ jobData, setJobData, onSubmit, submitLabel }) => {
       />
 
     
+    <label className="font-medium">Description</label>
+<ReactQuill
+  theme="snow"
+  value={jobData.description}
+  onChange={(v) =>
+    setJobData((prev) => ({ ...prev, description: v }))
+  }
+/>
 
-      <ReactQuill
-        theme="snow"
-        value={jobData.responsibilities}
-        onChange={(v) =>
-          setJobData((prev) => ({ ...prev, responsibilities: v }))
-        }
-      />
+
+      
 
     
 
