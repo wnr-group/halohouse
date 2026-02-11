@@ -62,8 +62,50 @@ export function PortfolioPage() {
           </p>
         </motion.div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <p className="text-sm tracking-[0.3em] uppercase text-primary">
+            Featured Work
+          </p>
+        </motion.div>
+
+        {/* AUTO HIGHLIGHT CAROUSEL */}
+<div className="overflow-hidden mb-16 ">
+  <div className="flex gap-6 w-max animate-scroll">
+    {[...portfolioItems, ...portfolioItems].map((item, index) => (
+      <div
+        key={index}
+        className="relative flex-shrink-0 min-w-[200px] md:min-w-[240px] lg:min-w-[280px] aspect-[9/16] rounded-lg overflow-hidden transition-transform duration-500 hover:scale-105"
+
+      >
+        <video
+          src={item.video}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      </div>
+    ))}
+  </div>
+</div>
+       
+        {/* Flex*/}
+        <div className="
+  flex flex-col gap-8
+  md:flex-row
+  md:overflow-x-auto
+  md:snap-x md:snap-mandatory
+  pb-6
+">
+
+
           {portfolioItems.map((item) => {
             const videoRef = useRef<HTMLVideoElement | null>(null);
             const [isAudioOn, setIsAudioOn] = React.useState(false);
@@ -120,8 +162,10 @@ export function PortfolioPage() {
             return (
               <motion.div
                 key={item.id}
-                className="group relative aspect-[9/16] bg-white rounded-lg border border-border overflow-hidden"
-                whileHover={!isMobile ? { scale: 1.05 } : undefined}
+                className="group relative w-full sm:min-w-[260px] md:min-w-[320px] lg:min-w-[380px] aspect-[9/16]"
+
+                whileHover={!isMobile ? { scale: 1.08 } : undefined}
+                transition={{ type: "spring", stiffness: 200, damping: 20 }}
                 onMouseEnter={handleHoverPlay}
                 onMouseLeave={handleHoverLeave}
                 onClick={handleClickPlay}
@@ -168,12 +212,7 @@ export function PortfolioPage() {
                   </div>
                 </div>
 
-                {/* Title */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
-                  <p className="text-xs tracking-wider uppercase text-white">
-                    {item.title}
-                  </p>
-                </div>
+               
               </motion.div>
             );
           })}
@@ -181,4 +220,4 @@ export function PortfolioPage() {
       </div>
     </div>
   );
-}
+}  
