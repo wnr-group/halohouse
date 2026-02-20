@@ -18,7 +18,7 @@ export function Hero() {
     <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0A1628]">
       {/* Background image with overlay - fixed parallax */}
       <div className="absolute inset-0 z-0 sticky top-0">
-        <img
+         <img
           src="https://images.unsplash.com/photo-1709846485906-30b28e7ed651?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb2RjYXN0JTIwc3R1ZGlvJTIwbWljcm9waG9uZXxlbnwxfHx8fDE3Njc3ODY3MzB8MA&ixlib=rb-4.1.0&q=80&w=1080"
           alt="Podcast Studio"
           className="w-full h-full object-cover opacity-10"
@@ -46,7 +46,7 @@ export function Hero() {
           style={{ y, scale }}
           className="text-7xl md:text-8xl lg:text-[10rem] xl:text-[12rem] font-light text-[#F5E6D3] mb-12 tracking-tight leading-[0.9]"
         >
-          Step into <br />Your Spotlight
+          Step into <br />Your Spotlight 
         </motion.h1>
         
         <motion.p 
