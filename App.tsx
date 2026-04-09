@@ -72,6 +72,7 @@ class ErrorBoundary extends Component<
 /* ---------------- APP CONTENT ---------------- */
 function AppContent() {
   const location = useLocation();
+    const SHOW_BOOKING_PAGE = false; 
 
   const isAdminPage = location.pathname.startsWith("/admin");
 
@@ -110,7 +111,10 @@ function AppContent() {
   <Route path="/services" element={<ServicesPage />} />
   <Route path="/about" element={<AboutPage />} />
   <Route path="/careers" element={<CareersPage />} />
+  {SHOW_BOOKING_PAGE && (
   <Route path="/book-session" element={<BookingPage />} />
+)}
+
   <Route path="/contact" element={<ContactPage />} />
   <Route path="/feedback" element={<FeedbackPage />} />
 </Routes>

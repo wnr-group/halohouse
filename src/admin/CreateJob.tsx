@@ -10,8 +10,6 @@ const CreateJob = () => {
     type: "Full-time",
     experience: "",
     description: "",
-    responsibilities: "",
-    requirements: "",
     status: "draft",
   });
 

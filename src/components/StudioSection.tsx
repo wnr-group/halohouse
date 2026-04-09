@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { Camera, Lightbulb, Mic2, Users, Film, Calendar } from 'lucide-react';
-import { Backdrops } from './Backdrops';
+
 
 export function StudioSection() {
   const capabilities = [
@@ -59,7 +59,7 @@ export function StudioSection() {
       </section>
 
       {/* Backdrops */}
-      <Backdrops />
+      
     </>
   );
 }

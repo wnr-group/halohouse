@@ -1,11 +1,16 @@
 import { motion } from "motion/react";
 import { History, Target, Sparkles } from "lucide-react";
-import studio from "../assets/studio.avif";
+import { SEO } from "../components/SEO";
+import studio from "../assets/podcast-studio-setup.webp"
 
 
 export function AboutPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEO
+        title="About Us | Our Story & Vision | Halo House"
+        description="Learn about the vision behind Halo House. We're dedicated to providing creators with a premium, hassle-free recording environment."
+      />
 
       {/* =========================
           SECTION 1: ABOUT HERO
@@ -38,7 +43,7 @@ export function AboutPage() {
           >
             <img
               src={studio}
-              alt="HALO House Podcast Studio"
+              alt="Professional podcast recording studio for creators"
               className="w-full h-full object-cover"
             />
 
@@ -67,7 +72,7 @@ export function AboutPage() {
           SECTION 3: STORY CARDS
       ========================== */}
       <section className="pb-32">
-       <div className="max-w-[1200px] mx-auto px-8 md:px-16 lg:px-24 
+        <div className="max-w-[1200px] mx-auto px-8 md:px-16 lg:px-24 
             grid grid-cols-1 md:grid-cols-3 gap-16 items-stretch">
 
           {/* HISTORY CARD */}
