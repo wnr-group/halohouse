@@ -54,7 +54,7 @@ function HeroSection() {
                   textShadow: "2px 2px 4px rgba(0,0,0,0.3)"
                 }}
               >
-                Step Into
+                Step Into 
               </span>
               <span className="block whitespace-nowrap">
                 <span
@@ -72,7 +72,7 @@ function HeroSection() {
                     textShadow: "0 0 30px rgba(253, 185, 19, 0.5), 0 0 60px rgba(253, 185, 19, 0.3)"
                   }}
                 >
-                  Spotlight
+                  Spotlight 
                 </span>
               </span>
               <span className="sr-only">: Premium Podcast Studio</span>

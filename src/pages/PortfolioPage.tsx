@@ -4,15 +4,15 @@ import { Play } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { Volume2, VolumeX } from "lucide-react";
 
-import CarRace from "../assets/Portfolio/car-race-project-out.mov";
-import KeralaAi from "../assets/Portfolio/Kerala-Ai created video.mp4";
-import NeuroOut from "../assets/Portfolio/Neuro-out.mp4";
-import Valentine from "../assets/Portfolio/Feb 5 - valentine_.mp4";
-import DenimJacket from "../assets/Portfolio/Denim-Jacket.mp4";
-import HarryPotter from "../assets/Portfolio/Harry-potter.mp4";
-import Comfort from "../assets/Portfolio/Comfort.mp4";
-import KeralaShake from "../assets/Portfolio/kerala-shake.mp4";
-import Upsc from "../assets/Portfolio/Upsc.mp4";
+import CarRace from "../assets/Portfolio/car-race-project-compress.webm";
+import KeralaAi from "../assets/Portfolio/Kerala-Ai created.webm";
+import NeuroOut from "../assets/Portfolio/Neuro-out-video.webm";
+import Valentine from "../assets/Portfolio/Feb 5 - valentine.webm";
+import DenimJacket from "../assets/Portfolio/Denim-Jacket-compress.webm";
+import HarryPotter from "../assets/Portfolio/Harry-potter-compress.webm";
+import Comfort from "../assets/Portfolio/Comfort-video.webm";
+import KeralaShake from "../assets/Portfolio/kerala-shake-video.webm";
+import Upsc from "../assets/Portfolio/Upsc-video.webm";
 
 export function PortfolioPage() {
   // Detect mobile (no hover devices)
