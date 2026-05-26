@@ -1,33 +1,48 @@
 import { supabase } from "@/lib/supabase";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { Session } from "@supabase/supabase-js";
 
 const AdminAuthGuard = ({ children }: { children: React.ReactNode }) => {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
+      setSession(s);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const handleLogin = async () => {
-    if (!password.trim()) {
-      setError("Password is required");
+    if (!email.trim() || !password.trim()) {
+      setError("Email and password are required");
       return;
     }
 
-    try {
-      const response = await supabase.functions.invoke("login", {
-        body: { password: password.trim() },
-      });
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password: password.trim(),
+    });
 
-      if (response.data["success"]) {
-        setIsAuthenticated(true);
-        setError("");
-      } else {
-        setError("Incorrect password");
-      }
-    } catch (err) {
-      setError("Authentication failed. Please try again.");
+    if (authError) {
+      setError("Incorrect email or password");
+    } else {
+      setError("");
     }
   };
-  if (!isAuthenticated) {
+
+  if (loading) return null;
+
+  if (!session) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F5E8D8]">
         <div className="max-w-md w-full p-8">
@@ -38,13 +53,20 @@ const AdminAuthGuard = ({ children }: { children: React.ReactNode }) => {
 
           <form
             onSubmit={async (e) => {
-              e.preventDefault(); // prevent page reload
+              e.preventDefault();
               await handleLogin();
             }}
           >
             <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full border px-4 py-3 mb-4"
+            />
+            <input
               type="password"
-              placeholder="Enter admin password"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full border px-4 py-3 mb-4"
@@ -60,7 +82,19 @@ const AdminAuthGuard = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <div className="flex justify-end px-8 pt-4">
+        <button
+          onClick={() => supabase.auth.signOut()}
+          className="text-sm opacity-60 hover:opacity-100 underline"
+        >
+          Sign out
+        </button>
+      </div>
+      {children}
+    </>
+  );
 };
 
 export default AdminAuthGuard;
