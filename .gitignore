@@ -46,6 +46,9 @@ coverage
 .eslintcache
 *.pem
 
+# Supabase
+supabase/.temp/
+
 # Old/unused components
 HeroCamera.tsx
 HeroCamera3D.tsx
