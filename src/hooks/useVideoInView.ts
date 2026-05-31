@@ -25,10 +25,10 @@ export function useVideoInView(src: string, options?: IntersectionObserverInit) 
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [options]);
 
   useEffect(() => {
-    if (isInView && ref.current && !ref.current.src) {
+    if (isInView && ref.current) {
       ref.current.src = src;
     }
   }, [isInView, src]);
