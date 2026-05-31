@@ -53,3 +53,10 @@ supabase/.temp/
 HeroCamera.tsx
 HeroCamera3D.tsx
 Hero.tsx
+
+# Large raw video assets — served from Supabase Storage
+src/assets/Portfolio/compressed/
+src/assets/Portfolio/*.mov
+src/assets/Portfolio/*.mp4
+src/assets/hero-video.mp4
+src/assets/client/*.mp4
