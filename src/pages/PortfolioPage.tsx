@@ -35,18 +35,18 @@ function PortfolioCarousel() {
     videoRefs.current.forEach((v, i) => {
       if (!v) return;
       if (i === activeIndex) {
-        v.src = videoUrl(portfolioItems[i].file);
-        v.load();
-        v.play().catch(() => {});
+        const targetSrc = videoUrl(portfolioItems[i].file);
+        if (v.src !== targetSrc) {
+          v.src = targetSrc;
+          v.addEventListener('canplay', () => v.play().catch(() => {}), { once: true });
+        } else {
+          v.play().catch(() => {});
+        }
       } else {
         v.pause();
       }
     });
   }, [activeIndex]);
-
-  const handleEnded = () => {
-    setActiveIndex((i) => (i + 1) % portfolioItems.length);
-  };
 
   return (
     <div className="overflow-hidden mb-16">
@@ -64,7 +64,11 @@ function PortfolioCarousel() {
               ref={(el) => { videoRefs.current[index] = el; }}
               muted
               playsInline
-              onEnded={index === activeIndex ? handleEnded : undefined}
+              onEnded={() => {
+                if (index === activeIndex) {
+                  setActiveIndex((prev) => (prev + 1) % portfolioItems.length);
+                }
+              }}
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
                 index === activeIndex ? "opacity-100" : "opacity-0"
               }`}
@@ -120,6 +124,7 @@ function PortfolioCard({
     if (!video || isMobile) return;
     video.pause();
     video.currentTime = 0;
+    activeVideoRef.current = null;
     setIsPlaying(false);
     setIsAudioOn(false);
   };
