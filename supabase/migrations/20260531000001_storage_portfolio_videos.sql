@@ -12,6 +12,7 @@ on conflict (id) do nothing;
 -- Allow anyone to read files (public CDN access)
 create policy "Public read access for portfolio videos"
   on storage.objects for select
+  to anon
   using ( bucket_id = 'portfolio-videos' );
 
 -- Allow authenticated users (admin) to upload/delete
