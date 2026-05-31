@@ -1,5 +1,5 @@
-
-import heroVideo from "../../assets/hero-video.mp4"
+const HERO_VIDEO_URL =
+  "https://tnfdwldpetfwwogkfuic.supabase.co/storage/v1/object/public/portfolio-videos/hero-video.mp4";
 
 export function HeroVideo() {
   return (
@@ -11,11 +11,11 @@ export function HeroVideo() {
         playsInline
         className="w-full h-full object-cover"
       >
-        <source src={heroVideo} type="video/mp4" />
+        <source src={HERO_VIDEO_URL} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
-      {/* Optional overlay (remove if not needed) */}
+      {/* Optional overlay */}
       <div className="absolute inset-0 bg-black/20" />
     </div>
   );
