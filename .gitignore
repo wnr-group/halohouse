@@ -60,3 +60,4 @@ src/assets/Portfolio/*.mov
 src/assets/Portfolio/*.mp4
 src/assets/hero-video.mp4
 src/assets/client/*.mp4
+.vercel
