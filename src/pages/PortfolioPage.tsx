@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Play, Volume2, VolumeX } from "lucide-react";
 import { SEO } from "../components/SEO";
@@ -8,87 +8,21 @@ const SUPABASE_STORAGE_URL =
   "https://tnfdwldpetfwwogkfuic.supabase.co/storage/v1/object/public/portfolio-videos";
 
 const portfolioItems = [
-  { id: 1, title: "Car Race",      category: "Commercial", file: "car-race.mp4" },
-  { id: 2, title: "Kerala AI",     category: "Reels",      file: "kerala-ai.mp4" },
-  { id: 3, title: "Neuro",         category: "Studio",     file: "neuro.mp4" },
-  { id: 4, title: "Valentine",     category: "Reels",      file: "valentine.mp4" },
-  { id: 5, title: "Denim Jacket",  category: "Commercial", file: "denim-jacket.mp4" },
-  { id: 6, title: "Harry Potter",  category: "Reels",      file: "harry-potter.mp4" },
-  { id: 7, title: "Comfort",       category: "Commercial", file: "comfort.mp4" },
-  { id: 8, title: "Kerala Shake",  category: "Reels",      file: "kerala-shake.mp4" },
-  { id: 9, title: "Upsc",          category: "Commercial", file: "upsc.mp4" },
+  { id: 1, title: "Car Race",      category: "Commercial", file: "car-race.mp4",     bg: "from-yellow-950 to-amber-900" },
+  { id: 2, title: "Kerala AI",     category: "Reels",      file: "kerala-ai.mp4",    bg: "from-sky-950 to-blue-900" },
+  { id: 3, title: "Neuro",         category: "Studio",     file: "neuro.mp4",        bg: "from-violet-950 to-purple-900" },
+  { id: 4, title: "Valentine",     category: "Reels",      file: "valentine.mp4",    bg: "from-rose-950 to-pink-900" },
+  { id: 5, title: "Denim Jacket",  category: "Commercial", file: "denim-jacket.mp4", bg: "from-slate-950 to-slate-800" },
+  { id: 6, title: "Harry Potter",  category: "Reels",      file: "harry-potter.mp4", bg: "from-stone-950 to-amber-950" },
+  { id: 7, title: "Comfort",       category: "Commercial", file: "comfort.mp4",      bg: "from-green-950 to-emerald-900" },
+  { id: 8, title: "Kerala Shake",  category: "Reels",      file: "kerala-shake.mp4", bg: "from-orange-950 to-red-900" },
+  { id: 9, title: "Upsc",          category: "Commercial", file: "upsc.mp4",         bg: "from-blue-950 to-indigo-900" },
 ];
 
 function videoUrl(file: string) {
   return `${SUPABASE_STORAGE_URL}/${file}`;
 }
 
-// Carousel: one video plays at a time, cycles automatically.
-// All video elements stay mounted (ref array) — only active one plays.
-// This avoids the detach/reattach bug where videoRef.current is null
-// after React unmounts the previously-active <video>.
-function PortfolioCarousel() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-
-  useEffect(() => {
-    videoRefs.current.forEach((v, i) => {
-      if (!v) return;
-      if (i === activeIndex) {
-        const targetSrc = videoUrl(portfolioItems[i].file);
-        if (v.src !== targetSrc) {
-          v.src = targetSrc;
-          v.addEventListener('canplay', () => v.play().catch(() => {}), { once: true });
-        } else {
-          v.play().catch(() => {});
-        }
-      } else {
-        v.pause();
-      }
-    });
-  }, [activeIndex]);
-
-  return (
-    <div className="overflow-hidden mb-16">
-      <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory">
-        {portfolioItems.map((item, index) => (
-          <div
-            key={item.id}
-            onClick={() => setActiveIndex(index)}
-            className={`relative flex-shrink-0 min-w-[200px] md:min-w-[240px] lg:min-w-[280px] aspect-[9/16] rounded-lg overflow-hidden cursor-pointer snap-start transition-all duration-300 ${
-              index === activeIndex ? "ring-2 ring-primary scale-105" : "opacity-70"
-            }`}
-          >
-            {/* Video always in DOM — only active one plays */}
-            <video
-              ref={(el) => { videoRefs.current[index] = el; }}
-              muted
-              playsInline
-              onEnded={() => {
-                if (index === activeIndex) {
-                  setActiveIndex((prev) => (prev + 1) % portfolioItems.length);
-                }
-              }}
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
-                index === activeIndex ? "opacity-100" : "opacity-0"
-              }`}
-            />
-            {index !== activeIndex && (
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background/80 flex items-center justify-center">
-                <Play className="w-8 h-8 text-primary" />
-              </div>
-            )}
-            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
-              <p className="text-xs text-white/90 font-medium">{item.title}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// Grid card: video loads only when in view
 function PortfolioCard({
   item,
   activeVideoRef,
@@ -96,7 +30,6 @@ function PortfolioCard({
   item: typeof portfolioItems[number];
   activeVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
 }) {
-  // Evaluated once at mount — avoids a fresh matchMedia call on every render.
   const isMobileRef = useRef(
     typeof window !== "undefined" && window.matchMedia("(hover: none)").matches
   );
@@ -105,6 +38,7 @@ function PortfolioCard({
   const videoRef = useVideoInView(videoUrl(item.file));
   const [isAudioOn, setIsAudioOn] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [hasThumbnail, setHasThumbnail] = useState(false);
 
   const handleHoverPlay = () => {
     const video = videoRef.current;
@@ -149,95 +83,108 @@ function PortfolioCard({
   };
 
   return (
-    <motion.div
-      className="group relative w-full sm:min-w-[260px] md:min-w-[320px] lg:min-w-[380px] aspect-[9/16]"
-      whileHover={!isMobile ? { scale: 1.08 } : undefined}
-      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+    <div
+      className={`group relative aspect-[9/16] rounded-xl overflow-hidden cursor-pointer bg-gradient-to-b ${item.bg}`}
       onMouseEnter={handleHoverPlay}
       onMouseLeave={handleHoverLeave}
       onClick={handleClickPlay}
     >
+      {/* Video fades in once first frame (thumbnail) is ready */}
       <video
         ref={videoRef}
         loop
         playsInline
-        preload="none"
+        preload="metadata"
         muted
-        className="absolute inset-0 w-full h-full object-cover"
+        onLoadedData={() => setHasThumbnail(true)}
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+          hasThumbnail ? "opacity-100" : "opacity-0"
+        }`}
       />
 
-      <div className="absolute top-4 left-4 px-3 py-1 bg-primary/15 border border-primary/30 rounded-full z-10">
-        <p className="text-[10px] tracking-widest uppercase text-primary">
+      {/* Persistent gradient overlay for text legibility */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+
+      {/* Category badge */}
+      <div className="absolute top-3 left-3 z-10">
+        <span className="px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-[10px] tracking-widest uppercase text-white font-medium">
           {item.category}
-        </p>
+        </span>
       </div>
 
-      <div className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
-        {isAudioOn ? (
-          <Volume2 className="w-4 h-4 text-white" />
-        ) : (
-          <>
-            <VolumeX className="w-4 h-4 text-white" />
-            <span className="text-[10px] text-white hidden md:block">
-              Click for sound
-            </span>
-          </>
-        )}
-      </div>
+      {/* Audio indicator — only show when src is loading/loaded */}
+      {hasThumbnail && (
+        <div className="absolute top-3 right-3 z-10">
+          <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
+            {isAudioOn ? (
+              <Volume2 className="w-3.5 h-3.5 text-white" />
+            ) : (
+              <>
+                <VolumeX className="w-3.5 h-3.5 text-white/70" />
+                <span className="text-[9px] text-white/70 hidden md:block">Tap for sound</span>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
+      {/* Play button */}
       <div
-        className={`absolute inset-0 flex items-center justify-center transition-opacity ${
-          isPlaying ? "opacity-0" : "opacity-80"
+        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${
+          isPlaying ? "opacity-0 pointer-events-none" : "opacity-100"
         }`}
       >
-        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
-          <Play className="w-8 h-8 text-primary-foreground ml-1" />
+        <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center group-hover:scale-110 group-hover:bg-white/30 transition-all duration-200">
+          <Play className="w-5 h-5 text-white fill-white ml-0.5" />
         </div>
       </div>
-    </motion.div>
+
+      {/* Title */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 z-10">
+        <p className="text-sm font-semibold text-white leading-tight">{item.title}</p>
+      </div>
+    </div>
   );
 }
 
 export function PortfolioPage() {
   const activeVideoRef = useRef<HTMLVideoElement | null>(null);
+
   return (
-    <div className="min-h-screen bg-background pt-32 pb-20">
+    <div className="min-h-screen bg-background pt-32 pb-24">
       <SEO
         title="Our Portfolio | Featured Creative Work | Halo House"
         description="Explore the premium podcasts and videos created at Halo House."
       />
 
-      <div className="max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24">
+      <div className="max-w-[1400px] mx-auto px-6 md:px-12 lg:px-20">
+        {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-20"
+          transition={{ duration: 0.7 }}
+          className="mb-14"
         >
-          <h1 className="text-6xl md:text-7xl lg:text-8xl font-light text-foreground">
+          <p className="text-sm tracking-[0.3em] uppercase text-primary mb-5">Featured Work</p>
+          <h1 className="text-6xl md:text-7xl lg:text-8xl font-light text-foreground mb-4">
             Portfolio
           </h1>
-          <p className="text-xl md:text-2xl text-foreground/70">
-            Explore our collection of professional content created in our studio
+          <p className="text-lg text-foreground/60 max-w-md">
+            Professional content created at Halo House studio. Hover to preview, click for sound.
           </p>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
-        >
-          <p className="text-sm tracking-[0.3em] uppercase text-primary">
-            Featured Work
-          </p>
-        </motion.div>
-
-        <PortfolioCarousel />
-
-        <div className="flex flex-col gap-8 md:flex-row md:overflow-x-auto md:snap-x md:snap-mandatory pb-6">
-          {portfolioItems.map((item) => (
-            <PortfolioCard key={item.id} item={item} activeVideoRef={activeVideoRef} />
+        {/* 3-column responsive grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 lg:gap-5">
+          {portfolioItems.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.07 }}
+            >
+              <PortfolioCard item={item} activeVideoRef={activeVideoRef} />
+            </motion.div>
           ))}
         </div>
       </div>
