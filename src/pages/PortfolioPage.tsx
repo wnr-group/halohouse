@@ -1,44 +1,180 @@
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { Play } from "lucide-react";
+import { Play, Volume2, VolumeX } from "lucide-react";
 import { SEO } from "../components/SEO";
-import { Volume2, VolumeX } from "lucide-react";
+import { useVideoInView } from "../hooks/useVideoInView";
 
-import CarRace from "../assets/Portfolio/car-race-project-out.mov";
-import KeralaAi from "../assets/Portfolio/Kerala-Ai created video.mp4";
-import NeuroOut from "../assets/Portfolio/Neuro-out.mp4";
-import Valentine from "../assets/Portfolio/Feb 5 - valentine_.mp4";
-import DenimJacket from "../assets/Portfolio/Denim-Jacket.mp4";
-import HarryPotter from "../assets/Portfolio/Harry-potter.mp4";
-import Comfort from "../assets/Portfolio/Comfort.mp4";
-import KeralaShake from "../assets/Portfolio/kerala-shake.mp4";
-import Upsc from "../assets/Portfolio/Upsc.mp4";
+const SUPABASE_STORAGE_URL =
+  "https://tnfdwldpetfwwogkfuic.supabase.co/storage/v1/object/public/portfolio-videos";
 
-export function PortfolioPage() {
-  // Detect mobile (no hover devices)
+const portfolioItems = [
+  { id: 1, title: "Car Race",      category: "Commercial", file: "car-race.mp4" },
+  { id: 2, title: "Kerala AI",     category: "Reels",      file: "kerala-ai.mp4" },
+  { id: 3, title: "Neuro",         category: "Studio",     file: "neuro.mp4" },
+  { id: 4, title: "Valentine",     category: "Reels",      file: "valentine.mp4" },
+  { id: 5, title: "Denim Jacket",  category: "Commercial", file: "denim-jacket.mp4" },
+  { id: 6, title: "Harry Potter",  category: "Reels",      file: "harry-potter.mp4" },
+  { id: 7, title: "Comfort",       category: "Commercial", file: "comfort.mp4" },
+  { id: 8, title: "Kerala Shake",  category: "Reels",      file: "kerala-shake.mp4" },
+  { id: 9, title: "Upsc",          category: "Commercial", file: "upsc.mp4" },
+];
+
+function videoUrl(file: string) {
+  return `${SUPABASE_STORAGE_URL}/${file}`;
+}
+
+// Carousel: one video plays at a time, cycles automatically
+function PortfolioCarousel() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.src = videoUrl(portfolioItems[activeIndex].file);
+    video.play().catch(() => {});
+  }, [activeIndex]);
+
+  const handleEnded = () => {
+    setActiveIndex((i) => (i + 1) % portfolioItems.length);
+  };
+
+  return (
+    <div className="overflow-hidden mb-16">
+      <div className="flex gap-6 overflow-x-auto pb-2 snap-x snap-mandatory">
+        {portfolioItems.map((item, index) => (
+          <div
+            key={item.id}
+            onClick={() => setActiveIndex(index)}
+            className={`relative flex-shrink-0 min-w-[200px] md:min-w-[240px] lg:min-w-[280px] aspect-[9/16] rounded-lg overflow-hidden cursor-pointer snap-start transition-all duration-300 ${
+              index === activeIndex ? "ring-2 ring-primary scale-105" : "opacity-70"
+            }`}
+          >
+            {index === activeIndex ? (
+              <video
+                ref={videoRef}
+                muted
+                loop={false}
+                playsInline
+                onEnded={handleEnded}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background/80 flex items-center justify-center">
+                <Play className="w-8 h-8 text-primary" />
+              </div>
+            )}
+            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent">
+              <p className="text-xs text-white/90 font-medium">{item.title}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Grid card: video loads only when in view
+function PortfolioCard({ item }: { item: typeof portfolioItems[number] }) {
   const isMobile =
     typeof window !== "undefined" && window.matchMedia("(hover: none)").matches;
 
-  // Track currently playing video
+  const videoRef = useVideoInView(videoUrl(item.file));
   const activeVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [isAudioOn, setIsAudioOn] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  const portfolioItems = [
-    { id: 1, title: "Car Race", category: "Commercial", video: CarRace },
-    { id: 2, title: "Kerala AI", category: "Reels", video: KeralaAi },
-    { id: 3, title: "Neuro", category: "Studio", video: NeuroOut },
-    { id: 4, title: "Valentine", category: "Reels", video: Valentine },
-    {
-      id: 5,
-      title: "Denim Jacket",
-      category: "Commercial",
-      video: DenimJacket,
-    },
-    { id: 6, title: "Harry Potter", category: "Reels", video: HarryPotter },
-    { id: 7, title: "Comfort", category: "Commercial", video: Comfort },
-    { id: 8, title: "Kerala Shake", category: "Reels", video: KeralaShake },
-    { id: 9, title: "Upsc", category: "Commercial", video: Upsc },
-  ];
+  const handleHoverPlay = () => {
+    const video = videoRef.current;
+    if (!video || isMobile) return;
+    if (activeVideoRef.current && activeVideoRef.current !== video) {
+      activeVideoRef.current.pause();
+      activeVideoRef.current.currentTime = 0;
+    }
+    video.muted = true;
+    video.play().catch(() => {});
+    setIsPlaying(true);
+    activeVideoRef.current = video;
+  };
 
+  const handleHoverLeave = () => {
+    const video = videoRef.current;
+    if (!video || isMobile) return;
+    video.pause();
+    video.currentTime = 0;
+    setIsPlaying(false);
+  };
+
+  const handleClickPlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (activeVideoRef.current && activeVideoRef.current !== video) {
+      activeVideoRef.current.pause();
+      activeVideoRef.current.currentTime = 0;
+    }
+    if (video.paused) {
+      video.muted = false;
+      video.play().catch(() => {});
+      setIsAudioOn(true);
+      setIsPlaying(true);
+      activeVideoRef.current = video;
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  return (
+    <motion.div
+      className="group relative w-full sm:min-w-[260px] md:min-w-[320px] lg:min-w-[380px] aspect-[9/16]"
+      whileHover={!isMobile ? { scale: 1.08 } : undefined}
+      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+      onMouseEnter={handleHoverPlay}
+      onMouseLeave={handleHoverLeave}
+      onClick={handleClickPlay}
+    >
+      <video
+        ref={videoRef}
+        loop
+        playsInline
+        preload="none"
+        muted
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+
+      <div className="absolute top-4 left-4 px-3 py-1 bg-primary/15 border border-primary/30 rounded-full z-10">
+        <p className="text-[10px] tracking-widest uppercase text-primary">
+          {item.category}
+        </p>
+      </div>
+
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
+        {isAudioOn ? (
+          <Volume2 className="w-4 h-4 text-white" />
+        ) : (
+          <>
+            <VolumeX className="w-4 h-4 text-white" />
+            <span className="text-[10px] text-white hidden md:block">
+              Click for sound
+            </span>
+          </>
+        )}
+      </div>
+
+      <div
+        className={`absolute inset-0 flex items-center justify-center transition-opacity ${
+          isPlaying ? "opacity-0" : "opacity-80"
+        }`}
+      >
+        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+          <Play className="w-8 h-8 text-primary-foreground ml-1" />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+export function PortfolioPage() {
   return (
     <div className="min-h-screen bg-background pt-32 pb-20">
       <SEO
@@ -47,7 +183,6 @@ export function PortfolioPage() {
       />
 
       <div className="max-w-[1600px] mx-auto px-8 md:px-16 lg:px-24">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -73,151 +208,14 @@ export function PortfolioPage() {
           </p>
         </motion.div>
 
-        {/* AUTO HIGHLIGHT CAROUSEL */}
-<div className="overflow-hidden mb-16 ">
-  <div className="flex gap-6 w-max animate-scroll">
-    {[...portfolioItems, ...portfolioItems].map((item, index) => (
-      <div
-        key={index}
-        className="relative flex-shrink-0 min-w-[200px] md:min-w-[240px] lg:min-w-[280px] aspect-[9/16] rounded-lg overflow-hidden transition-transform duration-500 hover:scale-105"
+        <PortfolioCarousel />
 
-      >
-        <video
-          src={item.video}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-      </div>
-    ))}
-  </div>
-</div>
-       
-        {/* Flex*/}
-        <div className="
-  flex flex-col gap-8
-  md:flex-row
-  md:overflow-x-auto
-  md:snap-x md:snap-mandatory
-  pb-6
-">
-
-
-          {portfolioItems.map((item) => {
-            const videoRef = useRef<HTMLVideoElement | null>(null);
-            const [isAudioOn, setIsAudioOn] = React.useState(false);
-            const [isPlaying, setIsPlaying] = React.useState(false);
-            // Hover play (desktop preview)
-            const handleHoverPlay = () => {
-              if (!videoRef.current || isMobile) return;
-
-              if (
-                activeVideoRef.current &&
-                activeVideoRef.current !== videoRef.current
-              ) {
-                activeVideoRef.current.pause();
-                activeVideoRef.current.currentTime = 0;
-              }
-
-              videoRef.current.muted = true;
-              videoRef.current.play();
-              setIsPlaying(true);
-              activeVideoRef.current = videoRef.current;
-            };
-
-            // Hover leave
-            const handleHoverLeave = () => {
-              if (!videoRef.current || isMobile) return;
-              videoRef.current.pause();
-              videoRef.current.currentTime = 0;
-              setIsPlaying(false);
-            };
-
-            // Click / Tap play with sound
-            const handleClickPlay = () => {
-              if (!videoRef.current) return;
-
-              const video = videoRef.current;
-
-              if (activeVideoRef.current && activeVideoRef.current !== video) {
-                activeVideoRef.current.pause();
-                activeVideoRef.current.currentTime = 0;
-              }
-
-              if (video.paused) {
-                video.muted = false;
-                video.play();
-                setIsAudioOn(true);
-                setIsPlaying(true);
-                activeVideoRef.current = video;
-              } else {
-                video.pause();
-                setIsPlaying(false);
-              }
-            };
-
-            return (
-              <motion.div
-                key={item.id}
-                className="group relative w-full sm:min-w-[260px] md:min-w-[320px] lg:min-w-[380px] aspect-[9/16]"
-
-                whileHover={!isMobile ? { scale: 1.08 } : undefined}
-                transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                onMouseEnter={handleHoverPlay}
-                onMouseLeave={handleHoverLeave}
-                onClick={handleClickPlay}
-              >
-                {/* Video */}
-                <video
-                  ref={videoRef}
-                  src={item.video}
-                  loop
-                  playsInline
-                  preload="metadata"
-                  muted
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-
-                {/* Category Badge */}
-                <div className="absolute top-4 left-4 px-3 py-1 bg-primary/15 border border-primary/30 rounded-full z-10">
-                  <p className="text-[10px] tracking-widest uppercase text-primary">
-                    {item.category}
-                  </p>
-                </div>
-
-                <div className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
-                  {isAudioOn ? (
-                    <Volume2 className="w-4 h-4 text-white" />
-                  ) : (
-                    <>
-                      <VolumeX className="w-4 h-4 text-white" />
-                      <span className="text-[10px] text-white hidden md:block">
-                        Click for sound
-                      </span>
-                    </>
-                  )}
-                </div>
-
-                {/* Play Icon */}
-                <div
-                  className={`absolute inset-0 flex items-center justify-center transition-opacity ${
-                    isPlaying ? "opacity-0" : "opacity-80"
-                  }`}
-                >
-                  <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
-                    <Play className="w-8 h-8 text-primary-foreground ml-1" />
-                  </div>
-                </div>
-
-               
-              </motion.div>
-            );
-          })}
+        <div className="flex flex-col gap-8 md:flex-row md:overflow-x-auto md:snap-x md:snap-mandatory pb-6">
+          {portfolioItems.map((item) => (
+            <PortfolioCard key={item.id} item={item} />
+          ))}
         </div>
       </div>
     </div>
   );
-}  
+}
