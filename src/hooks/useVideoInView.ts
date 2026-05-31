@@ -25,7 +25,8 @@ export function useVideoInView(src: string, options?: IntersectionObserverInit) 
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [options]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (isInView && ref.current) {

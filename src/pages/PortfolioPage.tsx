@@ -23,16 +23,25 @@ function videoUrl(file: string) {
   return `${SUPABASE_STORAGE_URL}/${file}`;
 }
 
-// Carousel: one video plays at a time, cycles automatically
+// Carousel: one video plays at a time, cycles automatically.
+// All video elements stay mounted (ref array) — only active one plays.
+// This avoids the detach/reattach bug where videoRef.current is null
+// after React unmounts the previously-active <video>.
 function PortfolioCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
 
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.src = videoUrl(portfolioItems[activeIndex].file);
-    video.play().catch(() => {});
+    videoRefs.current.forEach((v, i) => {
+      if (!v) return;
+      if (i === activeIndex) {
+        v.src = videoUrl(portfolioItems[i].file);
+        v.load();
+        v.play().catch(() => {});
+      } else {
+        v.pause();
+      }
+    });
   }, [activeIndex]);
 
   const handleEnded = () => {
@@ -50,16 +59,17 @@ function PortfolioCarousel() {
               index === activeIndex ? "ring-2 ring-primary scale-105" : "opacity-70"
             }`}
           >
-            {index === activeIndex ? (
-              <video
-                ref={videoRef}
-                muted
-                loop={false}
-                playsInline
-                onEnded={handleEnded}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            ) : (
+            {/* Video always in DOM — only active one plays */}
+            <video
+              ref={(el) => { videoRefs.current[index] = el; }}
+              muted
+              playsInline
+              onEnded={index === activeIndex ? handleEnded : undefined}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+                index === activeIndex ? "opacity-100" : "opacity-0"
+              }`}
+            />
+            {index !== activeIndex && (
               <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background/80 flex items-center justify-center">
                 <Play className="w-8 h-8 text-primary" />
               </div>
@@ -75,12 +85,20 @@ function PortfolioCarousel() {
 }
 
 // Grid card: video loads only when in view
-function PortfolioCard({ item }: { item: typeof portfolioItems[number] }) {
-  const isMobile =
-    typeof window !== "undefined" && window.matchMedia("(hover: none)").matches;
+function PortfolioCard({
+  item,
+  activeVideoRef,
+}: {
+  item: typeof portfolioItems[number];
+  activeVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
+}) {
+  // Evaluated once at mount — avoids a fresh matchMedia call on every render.
+  const isMobileRef = useRef(
+    typeof window !== "undefined" && window.matchMedia("(hover: none)").matches
+  );
+  const isMobile = isMobileRef.current;
 
   const videoRef = useVideoInView(videoUrl(item.file));
-  const activeVideoRef = useRef<HTMLVideoElement | null>(null);
   const [isAudioOn, setIsAudioOn] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -103,6 +121,7 @@ function PortfolioCard({ item }: { item: typeof portfolioItems[number] }) {
     video.pause();
     video.currentTime = 0;
     setIsPlaying(false);
+    setIsAudioOn(false);
   };
 
   const handleClickPlay = () => {
@@ -175,6 +194,7 @@ function PortfolioCard({ item }: { item: typeof portfolioItems[number] }) {
 }
 
 export function PortfolioPage() {
+  const activeVideoRef = useRef<HTMLVideoElement | null>(null);
   return (
     <div className="min-h-screen bg-background pt-32 pb-20">
       <SEO
@@ -212,7 +232,7 @@ export function PortfolioPage() {
 
         <div className="flex flex-col gap-8 md:flex-row md:overflow-x-auto md:snap-x md:snap-mandatory pb-6">
           {portfolioItems.map((item) => (
-            <PortfolioCard key={item.id} item={item} />
+            <PortfolioCard key={item.id} item={item} activeVideoRef={activeVideoRef} />
           ))}
         </div>
       </div>
