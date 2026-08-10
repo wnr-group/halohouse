@@ -1,17 +1,56 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { CameraScrollSection } from "../components/CameraScrollSection";
 import { BrandSlider } from "../components/BrandSlider";
 import { KeyStats } from "../components/KeyStats";
 import { StudioSection } from "../components/StudioSection";
 import { Testimonials } from "../components/Testimonials";
+import { supabase } from "../lib/supabase";
 
 
 import { HeroVideo } from "../components/ui/HeroVideo";
 import { SEO } from "../components/SEO";
 
+// Picks a smaller heading size once admin-entered text runs long,
+// so large font sizes never force horizontal overflow.
+function headingSizeClass(text: string) {
+  const len = (text || "").length;
+  if (len > 24) return "text-4xl sm:text-5xl md:text-6xl lg:text-7xl";
+  if (len > 14) return "text-5xl sm:text-6xl md:text-7xl lg:text-8xl";
+  return "text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl";
+}
+
+function descriptionSizeClass(text: string) {
+  const len = (text || "").length;
+  if (len > 160) return "text-lg md:text-xl lg:text-2xl";
+  return "text-xl md:text-2xl lg:text-3xl";
+}
 
 function HeroSection() {
+  const [content, setContent] = useState({
+    hero_line1: "Step Into",
+    hero_line2_prefix: "Your",
+    hero_highlight: "Spotlight",
+    hero_description:
+      "A home-studio built for creators who want premium-looking podcasts without the hassle. Walk in with ideas, walk out with content.",
+    hero_button_text: "Book Your Session",
+  });
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      const { data, error } = await supabase
+        .from("homepage_content")
+        .select("*")
+        .eq("id", 1)
+        .single();
+
+      if (!error && data) setContent((prev) => ({ ...prev, ...data }));
+    };
+
+    fetchContent();
+  }, []);
+
   return (
     <section
       className="relative overflow-hidden min-h-screen"
@@ -44,19 +83,24 @@ function HeroSection() {
         <div className="flex items-start md:items-center justify-center px-8 md:px-10 lg:px-8 pt-20 md:pt-4 pb-20">
 
           <div className="max-w-xl">
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-light mb-8 leading-[0.9]">
+            <h1
+              className={`${headingSizeClass(
+                [content.hero_line1, content.hero_line2_prefix, content.hero_highlight]
+                  .join(" ")
+              )} font-light mb-8 leading-[0.9]`}
+            >
 
 
               <span
-                className="block italic"
+                className="block italic break-words"
                 style={{
                   color: "#F5E6D3",
                   textShadow: "2px 2px 4px rgba(0,0,0,0.3)"
                 }}
               >
-                Step Into
+                {content.hero_line1}
               </span>
-              <span className="block whitespace-nowrap">
+              <span className="block break-words">
                 <span
                   className="italic"
                   style={{
@@ -64,7 +108,7 @@ function HeroSection() {
                     textShadow: "2px 2px 4px rgba(0,0,0,0.3)"
                   }}
                 >
-                  Your{" "}
+                  {content.hero_line2_prefix}{" "}
                 </span>
                 <span
                   style={{
@@ -72,15 +116,16 @@ function HeroSection() {
                     textShadow: "0 0 30px rgba(253, 185, 19, 0.5), 0 0 60px rgba(253, 185, 19, 0.3)"
                   }}
                 >
-                  Spotlight
+                  {content.hero_highlight}
                 </span>
               </span>
               <span className="sr-only">: Premium Podcast Studio</span>
             </h1>
 
-            <p className="text-xl md:text-2xl lg:text-3xl text-[#F5E6D3]/80">
-              A home-studio built for creators who want premium-looking podcasts
-              without the hassle. Walk in with ideas, walk out with content.
+            <p
+              className={`${descriptionSizeClass(content.hero_description)} text-[#F5E6D3]/80 break-words line-clamp-4`}
+            >
+              {content.hero_description}
             </p>
           </div>
         </div>
@@ -105,7 +150,7 @@ function HeroSection() {
           className="group px-12 py-5 text-sm tracking-widest uppercase hover:opacity-90 transition-all flex items-center justify-center gap-3 font-medium rounded-md"
           style={{ backgroundColor: "#FDB913", color: "#0A1628" }}
         >
-          Book Your Session
+          {content.hero_button_text}
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>

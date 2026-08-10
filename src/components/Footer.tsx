@@ -1,5 +1,7 @@
 import { Phone, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { supabase } from '../lib/supabase';
 
 export function Footer() {
   const features = [
@@ -8,6 +10,39 @@ export function Footer() {
     'Flexible Pricing',
     'Quick Turnaround',
   ];
+
+  const [settings, setSettings] = useState({
+    phone: '+91 8754706742',
+    email: 'halohousechennai@gmail.com',
+    instagram_url: 'https://www.instagram.com/halohouse._/',
+    youtube_url: 'https://www.instagram.com/halohouse._/',
+  });
+
+  const [extraLinks, setExtraLinks] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const { data, error } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('id', 1)
+        .single();
+
+      if (!error && data) setSettings((prev) => ({ ...prev, ...data }));
+    };
+
+    const fetchExtraLinks = async () => {
+      const { data, error } = await supabase
+        .from('site_extra_links')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (!error && data) setExtraLinks(data);
+    };
+
+    fetchSettings();
+    fetchExtraLinks();
+  }, []);
 
   // Scroll to top on footer navigation
   const scrollToTop = () => {
@@ -60,19 +95,19 @@ export function Footer() {
 
               <div className="space-y-2 font-light text-[#F5E6D3]/80">
                 <a
-                  href="tel:+918754706742"
+                  href={`tel:${settings.phone.replace(/\s+/g, "")}`}
                   className="flex items-center justify-center md:justify-start gap-2 hover:text-[#FDB913] transition-colors"
                 >
                   <Phone size={16} />
-                  +91 8754706742
+                  {settings.phone}
                 </a>
 
                 <a
-                  href="mailto:halohousechennai@gmail.com"
+                  href={`mailto:${settings.email}`}
                   className="flex items-center justify-center md:justify-start gap-2 hover:text-[#FDB913] transition-colors"
                 >
                   <MessageCircle size={16} />
-                  halohousechennai@gmail.com
+                  {settings.email}
                 </a>
               </div>
             </div>
@@ -113,7 +148,7 @@ export function Footer() {
   <div className="space-y-2">
     <div>
       <a
-        href="https://www.instagram.com/halohouse._/"
+        href={settings.instagram_url}
         target="_blank"
         rel="noopener noreferrer"
         className="text-[#F5E6D3]/80 hover:text-[#FDB913] transition-colors font-light"
@@ -124,7 +159,7 @@ export function Footer() {
 
     <div>
       <a
-        href="https://www.instagram.com/halohouse._/"
+        href={settings.youtube_url}
         target="_blank"
         rel="noopener noreferrer"
         className="text-[#F5E6D3]/80 hover:text-[#FDB913] transition-colors font-light"
@@ -132,6 +167,19 @@ export function Footer() {
         YouTube
       </a>
     </div>
+
+    {extraLinks.map((link) => (
+      <div key={link.id}>
+        <a
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#F5E6D3]/80 hover:text-[#FDB913] transition-colors font-light"
+        >
+          {link.label}
+        </a>
+      </div>
+    ))}
   </div>
 </div>
 

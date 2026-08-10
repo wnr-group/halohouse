@@ -20,7 +20,7 @@ export function useVideoInView(src: string, options?: IntersectionObserverInit) 
           observer.disconnect();
         }
       },
-      { rootMargin: '200px', threshold: 0.01, ...options }
+      { rootMargin: '80px', threshold: 0.01, ...options }
     );
 
     observer.observe(el);

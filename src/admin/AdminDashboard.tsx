@@ -24,6 +24,30 @@ const AdminDashboard = () => {
         <Link to="/admin/contact-messages" className="block underline">
           ➜ View Contact Messages
         </Link>
+
+        <Link to="/admin/videos" className="block underline">
+          ➜ Manage Portfolio Videos
+        </Link>
+
+        <Link to="/admin/hero-video" className="block underline">
+          ➜ Manage Hero Video
+        </Link>
+
+        <Link to="/admin/site-settings" className="block underline">
+          ➜ Site Settings (Contact & Social)
+        </Link>
+
+        <Link to="/admin/homepage-content" className="block underline">
+          ➜ Homepage Hero Content
+        </Link>
+
+        <Link to="/admin/homepage-stats" className="block underline">
+          ➜ Key Stats
+        </Link>
+
+        <Link to="/admin/testimonials" className="block underline">
+          ➜ Manage Testimonials
+        </Link>
       </div>
     </div>
   );
