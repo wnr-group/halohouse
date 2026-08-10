@@ -24,6 +24,15 @@ import AdminJobsList from "./src/admin/AdminJobsList";
 import AdminContactMessages from "./src/admin/AdminContactMessages";
 
 import EditJob from "./src/admin/EditJob";
+import PortfolioVideosList from "./src/admin/PortfolioVideosList";
+import CreatePortfolioVideo from "./src/admin/CreatePortfolioVideo";
+import AdminHeroVideo from "./src/admin/AdminHeroVideo";
+import AdminSiteSettings from "./src/admin/AdminSiteSettings";
+import AdminHomepageContent from "./src/admin/AdminHomepageContent";
+import AdminHomepageStats from "./src/admin/AdminHomepageStats";
+import TestimonialsList from "./src/admin/TestimonialsList";
+import CreateTestimonial from "./src/admin/CreateTestimonial";
+import EditTestimonial from "./src/admin/EditTestimonial";
 /* ---------------- ERROR BOUNDARY ---------------- */
 
 class ErrorBoundary extends Component<
@@ -102,6 +111,15 @@ function AppContent() {
     <Route path="bookings" element={<AdminBookings />} />
     <Route path="applications" element={<AdminApplications />} />
     <Route path="contact-messages" element={<AdminContactMessages />} />
+    <Route path="videos" element={<PortfolioVideosList />} />
+    <Route path="videos/new" element={<CreatePortfolioVideo />} />
+    <Route path="hero-video" element={<AdminHeroVideo />} />
+    <Route path="site-settings" element={<AdminSiteSettings />} />
+    <Route path="homepage-content" element={<AdminHomepageContent />} />
+    <Route path="homepage-stats" element={<AdminHomepageStats />} />
+    <Route path="testimonials" element={<TestimonialsList />} />
+    <Route path="testimonials/new" element={<CreateTestimonial />} />
+    <Route path="testimonials/:id/edit" element={<EditTestimonial />} />
 
   </Route>
 

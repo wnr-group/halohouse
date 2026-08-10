@@ -10,12 +10,33 @@ import {
 } from "lucide-react";
 import { SEO } from "../components/SEO";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabase";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 export function ContactPage() {
+  const [siteSettings, setSiteSettings] = useState({
+    phone: "+91 8754706742",
+    whatsapp_number: "+917010017080",
+    email: "halohousechennai@gmail.com",
+    address: "Philomina nagar Thanjavur, Sholingnallur Chennai.",
+  });
+
+  useEffect(() => {
+    const fetchSiteSettings = async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("id", 1)
+        .single();
+
+      if (!error && data) setSiteSettings((prev) => ({ ...prev, ...data }));
+    };
+
+    fetchSiteSettings();
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -148,24 +169,24 @@ export function ContactPage() {
               <ContactItem
                 icon={Phone}
                 label="Call Now"
-                value="+91 8754706742"
-                href="tel:+918754706742"
+                value={siteSettings.phone}
+                href={`tel:${siteSettings.phone.replace(/\s+/g, "")}`}
               />
               <ContactItem
                 icon={MessageCircle}
                 label="WhatsApp"
                 value="Available"
-                href="https://wa.me/917010017080"
+                href={`https://wa.me/${siteSettings.whatsapp_number.replace(/\D/g, "")}`}
               />
               <ContactItem
                 icon={Mail}
                 label="Email"
-                value="halohousechennai@gmail.com"
+                value={siteSettings.email}
               />
               <ContactItem
                 icon={MapPin}
                 label="Location"
-                value="Philomina nagar Thanjavur, Sholingnallur Chennai."
+                value={siteSettings.address}
               />
             </div>
 

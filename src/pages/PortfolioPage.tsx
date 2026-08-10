@@ -1,33 +1,25 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Play, Volume2, VolumeX } from "lucide-react";
 import { SEO } from "../components/SEO";
 import { useVideoInView } from "../hooks/useVideoInView";
+import { supabase } from "../lib/supabase";
+import { videoPublicUrl } from "../lib/videoUpload";
 
-const SUPABASE_STORAGE_URL =
-  "https://tnfdwldpetfwwogkfuic.supabase.co/storage/v1/object/public/portfolio-videos";
-
-const portfolioItems = [
-  { id: 1, title: "Car Race",      category: "Commercial", file: "car-race.mp4",     bg: "from-yellow-950 to-amber-900" },
-  { id: 2, title: "Kerala AI",     category: "Reels",      file: "kerala-ai.mp4",    bg: "from-sky-950 to-blue-900" },
-  { id: 3, title: "Neuro",         category: "Studio",     file: "neuro.mp4",        bg: "from-violet-950 to-purple-900" },
-  { id: 4, title: "Valentine",     category: "Reels",      file: "valentine.mp4",    bg: "from-rose-950 to-pink-900" },
-  { id: 5, title: "Denim Jacket",  category: "Commercial", file: "denim-jacket.mp4", bg: "from-slate-950 to-slate-800" },
-  { id: 6, title: "Harry Potter",  category: "Reels",      file: "harry-potter.mp4", bg: "from-stone-950 to-amber-950" },
-  { id: 7, title: "Comfort",       category: "Commercial", file: "comfort.mp4",      bg: "from-green-950 to-emerald-900" },
-  { id: 8, title: "Kerala Shake",  category: "Reels",      file: "kerala-shake.mp4", bg: "from-orange-950 to-red-900" },
-  { id: 9, title: "Upsc",          category: "Commercial", file: "upsc.mp4",         bg: "from-blue-950 to-indigo-900" },
-];
-
-function videoUrl(file: string) {
-  return `${SUPABASE_STORAGE_URL}/${file}`;
-}
+type PortfolioItem = {
+  id: string;
+  title: string;
+  category: string;
+  file_path: string;
+  poster_path: string | null;
+  bg: string;
+};
 
 function PortfolioCard({
   item,
   activeVideoRef,
 }: {
-  item: typeof portfolioItems[number];
+  item: PortfolioItem;
   activeVideoRef: React.MutableRefObject<HTMLVideoElement | null>;
 }) {
   const isMobileRef = useRef(
@@ -35,11 +27,10 @@ function PortfolioCard({
   );
   const isMobile = isMobileRef.current;
 
-  const videoRef = useVideoInView(videoUrl(item.file));
+  const videoRef = useVideoInView(videoPublicUrl(item.file_path));
   const [isAudioOn, setIsAudioOn] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [hasThumbnail, setHasThumbnail] = useState(false);
-
+  const [hasThumbnail, setHasThumbnail] = useState(!!item.poster_path);
   const handleHoverPlay = () => {
     const video = videoRef.current;
     if (!video || isMobile) return;
@@ -89,13 +80,14 @@ function PortfolioCard({
       onMouseLeave={handleHoverLeave}
       onClick={handleClickPlay}
     >
-      {/* Video fades in once first frame (thumbnail) is ready */}
+      {/* Poster shows instantly; video fades in once it has loaded */}
       <video
         ref={videoRef}
         loop
         playsInline
         preload="metadata"
         muted
+        poster={item.poster_path ? videoPublicUrl(item.poster_path) : undefined}
         onLoadedData={() => setHasThumbnail(true)}
         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
           hasThumbnail ? "opacity-100" : "opacity-0"
@@ -149,6 +141,25 @@ function PortfolioCard({
 
 export function PortfolioPage() {
   const activeVideoRef = useRef<HTMLVideoElement | null>(null);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+
+  useEffect(() => {
+    const fetchPortfolioItems = async () => {
+      const { data, error } = await supabase
+        .from("portfolio_videos")
+        .select("*")
+        .order("sort_order", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching portfolio videos:", error);
+        return;
+      }
+
+      setPortfolioItems(data || []);
+    };
+
+    fetchPortfolioItems();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background pt-32 pb-24">

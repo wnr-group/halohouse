@@ -1,26 +1,26 @@
 import { motion } from 'motion/react';
 import { useInView } from 'motion/react';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Users, Video, Briefcase } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+
+const ICONS: Record<string, any> = { users: Users, video: Video, briefcase: Briefcase };
 
 export function KeyStats() {
-  const stats = [
-    {
-      icon: Users,
-      value: '20+',
-      label: 'Clients'
-    },
-    {   
-      icon: Video,
-      value: '500+',
-      label: 'Videos'
-    },
-    {
-      icon: Briefcase,
-      value: '5+',
-      label: 'Industries'
-    }
-  ];
+  const [stats, setStats] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      const { data, error } = await supabase
+        .from('homepage_stats')
+        .select('*')
+        .order('sort_order', { ascending: true });
+
+      if (!error && data) setStats(data);
+    };
+
+    fetchStats();
+  }, []);
 
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
@@ -30,7 +30,7 @@ export function KeyStats() {
       <div className="max-w-[1600px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
           {stats.map((stat, index) => {
-            const Icon = stat.icon;
+            const Icon = ICONS[stat.icon_key] || Users;
             return (
               <motion.div
                 key={index}

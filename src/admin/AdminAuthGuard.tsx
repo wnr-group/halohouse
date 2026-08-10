@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import type { Session } from "@supabase/supabase-js";
 
 const AdminAuthGuard = ({ children }: { children: React.ReactNode }) => {
@@ -84,7 +85,10 @@ const AdminAuthGuard = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <>
-      <div className="flex justify-end px-8 pt-4">
+      <div className="flex justify-end items-center gap-6 px-8 pt-4">
+        <Link to="/admin" className="text-sm opacity-60 hover:opacity-100 underline">
+          Dashboard
+        </Link>
         <button
           onClick={() => supabase.auth.signOut()}
           className="text-sm opacity-60 hover:opacity-100 underline"
