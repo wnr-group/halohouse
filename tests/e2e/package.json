@@ -1,0 +1,8 @@
+{
+  "name": "halohouse-e2e",
+  "private": true,
+  "description": "Isolated Playwright suite so the app's package.json/lockfile stay untouched",
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}

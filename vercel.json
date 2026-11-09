@@ -1,5 +1,6 @@
 {
   "routes": [
-    { "src": "/[^.]+", "dest": "/", "status": 200 }
+    { "src": "/workshop", "status": 308, "headers": { "Location": "/workshop/" } },
+    { "src": "/(?!workshop(?:/|$))[^.]+", "dest": "/", "status": 200 }
   ]
 }

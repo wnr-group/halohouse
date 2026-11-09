@@ -1,11 +1,29 @@
 
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import tailwindcss from '@tailwindcss/vite'
 
+// Dev only: Vite's SPA fallback would otherwise answer /workshop/ with the React app.
+// public/workshop/ is a standalone static page, so serve its index.html as-is.
+const workshopStatic = (): Plugin => ({
+  name: 'serve-workshop-static',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      const [pathname, query] = (req.url || '').split('?');
+      if (pathname === '/workshop') {
+        res.statusCode = 308;
+        res.setHeader('Location', '/workshop/' + (query ? `?${query}` : ''));
+        return res.end();
+      }
+      if (pathname === '/workshop/') req.url = '/workshop/index.html' + (query ? `?${query}` : '');
+      next();
+    });
+  },
+});
+
 export default defineConfig({
-  plugins: [react(),
+  plugins: [workshopStatic(), react(),
     tailwindcss(),
   ],
   assetsInclude: ["**/*.glb"],
