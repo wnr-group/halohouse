@@ -388,6 +388,58 @@ test.describe('E2E-08 interactive elements', () => {
     await shot(page, '22-mobile-payment-step.png');
     expect(formPosts).toHaveLength(1);
   });
+
+  test('phone and age validation: inline errors, blocks Step 2, nothing posted', async ({ page, formPosts }) => {
+    await page.goto(WS_URL);
+    await page.locator('[data-cta="hero"]').click();
+    const field = (id: string) => page.locator(`#${id}`).locator('xpath=ancestor::div[contains(@class,"field")]');
+    const fillRest = async () => {
+      await page.fill('#name', 'QA Test'); await page.fill('#email', 'qa.test@example.com');
+      await page.selectOption('#gender', 'Female');
+      if (!(await page.locator('#agree').isChecked())) await page.locator('#agree').check();
+    };
+    await fillRest();
+
+    const badPhones = ['', '12345678901234567', '987654321', 'abcdefghij', '98765abcde', '98765#43210', '1234567890', '+91 98765 4321', '09876543210'];
+    for (const p of badPhones) {
+      await page.fill('#phone', p); await page.fill('#age', '25');
+      await page.locator('#btn1').click();
+      await expect(field('phone'), `phone "${p}" should be rejected`).toHaveClass(/bad/);
+      await expect(field('phone').locator('.err')).not.toBeEmpty();
+      await expect(page.locator('#step2'), `phone "${p}" must not reach Step 2`).toBeHidden();
+    }
+    // specific messages
+    await page.fill('#phone', '12345678901234567'); await page.locator('#btn1').click();
+    await expect(field('phone').locator('.err')).toContainText('10 digits');
+    await page.fill('#phone', 'abc'); await page.locator('#btn1').click();
+    await expect(field('phone').locator('.err')).toContainText('digits only');
+
+    const badAges = ['', '0', '-5', '22.5', '4', '91', '150', '1e1'];
+    for (const a of badAges) {
+      await page.fill('#phone', '9876543210'); await page.fill('#age', a);
+      await page.locator('#btn1').click();
+      await expect(field('age'), `age "${a}" should be rejected`).toHaveClass(/bad/);
+      await expect(field('age').locator('.err')).not.toBeEmpty();
+      await expect(page.locator('#step2'), `age "${a}" must not reach Step 2`).toBeHidden();
+    }
+    expect(formPosts, 'no booking may be posted for invalid input').toHaveLength(0);
+
+    // live (browser input) feedback: the error clears as soon as the value becomes valid
+    await page.fill('#age', '22.5'); await page.locator('#btn1').click();
+    await expect(field('age')).toHaveClass(/bad/);
+    await page.fill('#age', '22');
+    await expect(field('age')).not.toHaveClass(/bad/);
+
+    // valid values go through: bare 10 digits, +91 prefix, 91 prefix; ages at both range limits
+    for (const [p, a] of [['9876543210', '5'], ['+91 98765 43210', '90'], ['919876543210', '22']]) {
+      await page.fill('#phone', p); await page.fill('#age', a);
+      await page.locator('#btn1').click();
+      await expect(page.locator('#step2'), `phone "${p}" age "${a}" should be accepted`).toBeVisible();
+      expect(formPosts[formPosts.length - 1]['WhatsApp']).toBe('+91 9876543210');
+      await page.evaluate(() => { document.getElementById('step2')!.classList.add('hidden'); document.getElementById('step1')!.classList.remove('hidden'); });
+    }
+    expect(formPosts).toHaveLength(3);
+  });
 });
 
 // ---------------------------------------------------------------- Meta Pixel
