@@ -694,16 +694,45 @@ body.locked .sticky{transform:translateY(110%)!important}
 
   function setBad(id, bad){ $(id).closest('.field').classList.toggle('bad', bad); return !bad; }
 
+  var AGE_MIN=5, AGE_MAX=90;
+  // Returns {v: cleaned value, msg: error text or ''}.
+  function checkPhone(raw){
+    raw = raw.trim();
+    if(!raw) return {v:'', msg:'Enter your WhatsApp number'};
+    if(!/^\+?[\d\s\-]+$/.test(raw)) return {v:'', msg:'Use digits only (an optional +91 is fine)'};
+    var d = raw.replace(/\D/g,'');
+    if(/^\+?\s*91/.test(raw) && (raw.charAt(0)==='+' || d.length>10)) d = d.slice(2);
+    if(d.length!==10) return {v:'', msg:'Enter exactly 10 digits (you entered '+d.length+')'};
+    if(!/^[6-9]/.test(d)) return {v:'', msg:'Indian mobile numbers start with 6, 7, 8 or 9'};
+    return {v:d, msg:''};
+  }
+  function checkAge(raw){
+    raw = raw.trim();
+    if(!raw) return {v:'', msg:'Enter your age'};
+    if(!/^\d+$/.test(raw)) return {v:'', msg:'Enter a whole number (no decimals or negatives)'};
+    var n = +raw;
+    if(n<AGE_MIN || n>AGE_MAX) return {v:'', msg:'Age must be between '+AGE_MIN+' and '+AGE_MAX};
+    return {v:String(n), msg:''};
+  }
+  function showCheck(id, r){
+    $(id).closest('.field').querySelector('.err').textContent = r.msg;
+    return setBad(id, !!r.msg);
+  }
+  $('phone').addEventListener('input', function(){ if(this.closest('.field').classList.contains('bad')) showCheck('phone', checkPhone(this.value)); });
+  $('age').addEventListener('input', function(){ if(this.closest('.field').classList.contains('bad')) showCheck('age', checkAge(this.value)); });
+  $('phone').addEventListener('blur', function(){ if(this.value) showCheck('phone', checkPhone(this.value)); });
+  $('age').addEventListener('blur', function(){ if(this.value) showCheck('age', checkAge(this.value)); });
+
   $('step1').addEventListener('submit', function(ev){
     ev.preventDefault();
-    var name=$('name').value.trim(), phone=$('phone').value.replace(/\D/g,'').replace(/^91(?=\d{10}$)/,'').replace(/^0(?=\d{10}$)/,''),
-        email=$('email').value.trim(), gender=$('gender').value, age=$('age').value.trim();
+    var name=$('name').value.trim(), pr=checkPhone($('phone').value), ar=checkAge($('age').value),
+        phone=pr.v, email=$('email').value.trim(), gender=$('gender').value, age=ar.v;
     var ok = true;
     ok = setBad('name', name.length<2) && ok;
-    ok = setBad('phone', !/^[6-9]\d{9}$/.test(phone)) && ok;
+    ok = showCheck('phone', pr) && ok;
     ok = setBad('email', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) && ok;
     ok = setBad('gender', !gender) && ok;
-    ok = setBad('age', !(+age>=5 && +age<=90)) && ok;
+    ok = showCheck('age', ar) && ok;
     var agreed = $('agree').checked; $('agreeLbl').classList.toggle('bad', !agreed); ok = agreed && ok;
     if(!ok){ var f=document.querySelector('.field.bad input, .field.bad select'); if(f) f.focus(); return; }
     if(this._honey.value) return; // bot
